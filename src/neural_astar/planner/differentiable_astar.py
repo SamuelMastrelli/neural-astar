@@ -36,23 +36,25 @@ def get_heuristic(goal_maps: torch.tensor, tb_factor: float = 0.001) -> torch.te
     """
 
     # some preprocessings to deal with mini-batches
-    num_samples, H, W = goal_maps.shape[0], goal_maps.shape[-2], goal_maps.shape[-1]
-    grid = torch.meshgrid(torch.arange(0, H), torch.arange(0, W))
-    loc = torch.stack(grid, dim=0).type_as(goal_maps)
-    loc_expand = loc.reshape(2, -1).unsqueeze(0).expand(num_samples, 2, -1)
-    goal_loc = torch.einsum("kij, bij -> bk", loc, goal_maps)
-    goal_loc_expand = goal_loc.unsqueeze(-1).expand(num_samples, 2, -1)
+    num_samples, H, W = goal_maps.shape[0], goal_maps.shape[-2], goal_maps.shape[-1]  #numero dei campioni, Altezza e lasrghezza delle matrici
+    grid = torch.meshgrid(torch.arange(0, H), torch.arange(0, W))  #griglia con righe 0 a H e colonne da 0 a W
+    loc = torch.stack(grid, dim=0).type_as(goal_maps) #Vengono poi stackate insieme con lo stesso tipo di goal_maps
+    loc_expand = loc.reshape(2, -1).unsqueeze(0).expand(num_samples, 2, -1) #Ridimensione a 2, -1(ultima dimensione), viene aggiunta la dimensione grande 1 e viene ripetuto per numsamples
+    goal_loc = torch.einsum("kij, bij -> bk", loc, goal_maps)  #Somma di einstein:
+    #Operazione per generalizzare operazioni tra matrici e tensori(perdiamo un po' di ottimizzazione solo in alcuni casi)
+    #Moltiplicazione tra loc e goal maps che ha come dimensioni b e k: se loc e' 4, 5, 5 e goal maps e' 10, 5, 5 -> matrice 4 x 10
+    goal_loc_expand = goal_loc.unsqueeze(-1).expand(num_samples, 2, -1) #Aggiunge una dimensione 1 alla fine, espande per num_samples
 
     # chebyshev distance
-    dxdy = torch.abs(loc_expand - goal_loc_expand)
-    h = dxdy.sum(dim=1) - dxdy.min(dim=1)[0]
-    euc = torch.sqrt(((loc_expand - goal_loc_expand) ** 2).sum(1))
-    h = (h + tb_factor * euc).reshape_as(goal_maps)
+    dxdy = torch.abs(loc_expand - goal_loc_expand)  #chebyshev
+    h = dxdy.sum(dim=1) - dxdy.min(dim=1)[0] #somma su dimensione - minimo sulla dimensione 1
+    euc = torch.sqrt(((loc_expand - goal_loc_expand) ** 2).sum(1)) #distanza euclidea
+    h = (h + tb_factor * euc).reshape_as(goal_maps) #euristica con la forma di goal_maps
 
     return h
 
 
-def _st_softmax_noexp(val: torch.tensor) -> torch.tensor:
+def _st_softmax_noexp(val: torch.tensor) -> torch.tensor: #Softmax per trovare il nodo migliore
     """
     Softmax + discretized activation
     Used a detach() trick as done in straight-through softmax
@@ -74,7 +76,7 @@ def _st_softmax_noexp(val: torch.tensor) -> torch.tensor:
     return (y_hard - y).detach() + y
 
 
-def expand(x: torch.tensor, neighbor_filter: torch.tensor) -> torch.tensor:
+def expand(x: torch.tensor, neighbor_filter: torch.tensor) -> torch.tensor: #Nodi vicini a x, Neighbo filter : [[111], [101], [111]]
     """
     Expand neighboring node
 
@@ -96,9 +98,9 @@ def expand(x: torch.tensor, neighbor_filter: torch.tensor) -> torch.tensor:
 def backtrack(
     start_maps: torch.tensor,
     goal_maps: torch.tensor,
-    parents: torch.tensor,
+    parents: torch.tensor, #Come funziona?
     current_t: int,
-) -> torch.tensor:
+) -> torch.tensor: #Chiedere
     """
     Backtrack the search results to obtain paths
 
@@ -117,7 +119,7 @@ def backtrack(
     goal_maps = goal_maps.type(torch.long)
     start_maps = start_maps.type(torch.long)
     path_maps = goal_maps.type(torch.long)
-    num_samples = len(parents)
+    num_samples = len(parents)  ##Why?
     loc = (parents * goal_maps.view(num_samples, -1)).sum(-1)
     for _ in range(current_t):
         path_maps.view(num_samples, -1)[range(num_samples), loc] = 1
@@ -189,12 +191,13 @@ class DifferentiableAstar(nn.Module):
         intermediate_results = []
 
         h = self.get_heuristic(goal_maps)
-        h = h + cost_maps
+        h = h + cost_maps 
         g = torch.zeros_like(start_maps)
 
         parents = (
+            #Vettori dei starting point
             torch.ones_like(start_maps).reshape(num_samples, -1)
-            * goal_maps.reshape(num_samples, -1).max(-1, keepdim=True)[-1]
+            * goal_maps.reshape(num_samples, -1).max(-1, keepdim=True)[-1] #vettori dei goal, poi gli indici di essi
         )
 
         size = cost_maps.shape[-1]
@@ -203,10 +206,10 @@ class DifferentiableAstar(nn.Module):
         for t in range(Tmax):
 
             # select the node that minimizes cost
-            f = self.g_ratio * g + (1 - self.g_ratio) * h
-            f_exp = torch.exp(-1 * f / math.sqrt(cost_maps.shape[-1]))
-            f_exp = f_exp * open_maps
-            selected_node_maps = _st_softmax_noexp(f_exp)
+            f = self.g_ratio * g + (1 - self.g_ratio) * h #f di a start con ratio tra g e h
+            f_exp = torch.exp(-1 * f / math.sqrt(cost_maps.shape[-1])) #attivazione di hubara, con temperatura come radice della dimensione -1 dei costi [width]
+            f_exp = f_exp * open_maps #Scherma con i nodi aperti
+            selected_node_maps = _st_softmax_noexp(f_exp) #Selezione nodo migliore
             if store_intermediate_results:
                 intermediate_results.append(
                     {
@@ -220,7 +223,7 @@ class DifferentiableAstar(nn.Module):
             is_unsolved = (dist_to_goal < 1e-8).float()
 
             histories = histories + selected_node_maps
-            histories = torch.clamp(histories, 0, 1)
+            histories = torch.clamp(histories, 0, 1) #Min 0, max 1
             open_maps = open_maps - is_unsolved * selected_node_maps
             open_maps = torch.clamp(open_maps, 0, 1)
 

@@ -2,9 +2,9 @@
 Author: Ryo Yonetani
 Affiliation: OSX
 """
-from __future__ import annotations
+from __future__ import annotations  #Importa le annotazioni, il tipo di ritorno per type checking
 
-import segmentation_models_pytorch as smp
+import segmentation_models_pytorch as smp  #Modulo che contiene funzioni e oggetti per la segmentazione delle immagini
 import torch
 import torch.nn as nn
 
@@ -22,7 +22,7 @@ class EncoderBase(nn.Module):
         super().__init__()
         self.model = self.construct_encoder(input_dim, encoder_depth)
         if const is not None:
-            self.const = nn.Parameter(torch.ones(1) * const)
+            self.const = nn.Parameter(torch.ones(1) * const)  #nn.Parameter fa si che la costante compaia in model.parameters()
         else:
             self.const = 1.0
 
@@ -34,7 +34,7 @@ class EncoderBase(nn.Module):
         return y * self.const
 
 
-class Unet(EncoderBase):
+class Unet(EncoderBase): #Unet per le strade percorribili nelle immagini naturali
 
     DECODER_CHANNELS = [256, 128, 64, 32, 16]
 
