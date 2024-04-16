@@ -24,7 +24,7 @@ Neural A\* is a novel data-driven search-based planner that consists of a traina
 
 ### Installation (venv)
 ```sh
-$ git clone --recursive https://github.com/omron-sinicx/neural-astar
+$ git clone --recursive https://github.com/SamuelMastrelli/neural-astar
 $ python -m venv .venv
 $ source .venv/bin/activate
 (.venv) $ pip install .[dev]
