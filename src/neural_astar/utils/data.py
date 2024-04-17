@@ -34,7 +34,7 @@ def visualize_results(
     else:
         histories = planner_outputs.histories
         paths = planner_outputs.paths
-    results = make_grid(map_designs).permute(1, 2, 0)
+    results = make_grid(map_designs).permute(1, 2, 0) #make_grid fa una griglia di immagini, permute scambia le dimensioni
     h = make_grid(histories).permute(1, 2, 0)
     p = make_grid(paths).permute(1, 2, 0).float()
     results[h[..., 0] == 1] = torch.tensor([0.2, 0.8, 0])

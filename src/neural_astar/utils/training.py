@@ -28,7 +28,7 @@ def load_from_ptl_checkpoint(checkpoint_path: str) -> dict:
         dict: model state dict
     """
 
-    ckpt_file = sorted(glob(f"{checkpoint_path}/**/*.ckpt", recursive=True))[-1]
+    ckpt_file = sorted(glob(f"{checkpoint_path}/**/*.ckpt", recursive=True))[-1] #Glob restituisce una lista di pathname che matchano con il primo argomento
     print(f"load {ckpt_file}")
     state_dict = torch.load(ckpt_file)["state_dict"]
     state_dict_extracted = dict()
@@ -39,7 +39,10 @@ def load_from_ptl_checkpoint(checkpoint_path: str) -> dict:
     return state_dict_extracted
 
 
-class PlannerModule(pl.LightningModule):
+class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice 
+    #in 6 sezioni: initialization(init e setup), train loop(training step),
+    #validation loop(validation step), test loop(test step), prediction loop(preditcion step),
+    #optimizers and LR schedulers(configure optimizer)
     def __init__(self, planner, config):
         super().__init__()
         self.planner = planner
@@ -56,7 +59,7 @@ class PlannerModule(pl.LightningModule):
         map_designs, start_maps, goal_maps, opt_trajs = train_batch
         outputs = self.forward(map_designs, start_maps, goal_maps)
         loss = nn.L1Loss()(outputs.histories, opt_trajs)
-        self.log("metrics/train_loss", loss)
+        self.log("metrics/train_loss", loss)  #Log logs metrics for each training step: esegue la back propagation
 
         return loss
 
