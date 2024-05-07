@@ -13,6 +13,7 @@ from neural_astar.planner import NeuralAstar
 from neural_astar.utils.data import create_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint #salva periodicamente il modello monitorando delle quantita'
+import sys
 
 
 @hydra.main(config_path="config", config_name="train")
@@ -27,6 +28,11 @@ def main(config):
         config.dataset + ".npz", "valid", config.params.batch_size, shuffle=False
     )
 
+    im, s, g, t = next(iter(train_loader))
+    print(im.shape, s.shape, g.shape, t.shape)
+
+
+
     neural_astar = NeuralAstar(
         encoder_input=config.encoder.input,
         encoder_arch=config.encoder.arch,
@@ -37,6 +43,7 @@ def main(config):
     checkpoint_callback = ModelCheckpoint(
         monitor="metrics/h_mean", save_weights_only=True, mode="max"
     )
+
 
     module = PlannerModule(neural_astar, config)
     logdir = f"{config.logdir}/{os.path.basename(config.dataset)}"

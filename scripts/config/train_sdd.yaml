@@ -1,17 +1,17 @@
 seed: 1234
-dataset: "12x12"
+dataset: "planning-datasets/data/sdd/s064_0.5_128_300/bookstore/"
 logdir: "model"
 Tmax: 0.25
 
 encoder:
   input: "rgb+"
-  arch: "CNNDownSize"
+  arch: "Unet"
   depth: 3
   const: 10.0
 
 params:
   batch_size: 100
-  num_epochs: 4
+  num_epochs: 5
   lr: 0.001
 
 

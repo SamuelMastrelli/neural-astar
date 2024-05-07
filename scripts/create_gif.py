@@ -38,9 +38,9 @@ def main(config):
         num_starts=1,
     )
     map_designs, start_maps, goal_maps, opt_trajs = next(iter(dataloader))
-    outputs = planner(
-        map_designs, start_maps, goal_maps, store_intermediate_results=True
-    )
+    # outputs = planner(
+    #     map_designs, start_maps, goal_maps, store_intermediate_results=True
+    # )
 
     outputs = planner(
         map_designs[problem_id : problem_id + 1],
@@ -48,6 +48,7 @@ def main(config):
         goal_maps[problem_id : problem_id + 1],
         store_intermediate_results=True,
     )
+    
     frames = [
         visualize_results(
             map_designs[problem_id : problem_id + 1], intermediate_results, scale=4

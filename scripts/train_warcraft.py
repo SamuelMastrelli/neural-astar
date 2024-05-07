@@ -27,6 +27,9 @@ def main(config):
         config.dataset, "val", config.params.batch_size, shuffle=False
     )
 
+    im, s, g, t = next(iter(train_loader))
+    print(im.shape, s.shape, g.shape, t.shape)
+
     neural_astar = NeuralAstar(
         encoder_input=config.encoder.input,
         encoder_arch=config.encoder.arch,
