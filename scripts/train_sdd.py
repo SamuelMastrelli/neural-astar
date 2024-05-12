@@ -29,6 +29,7 @@ def main(config):
     im, s, g, t = next(iter(train_loader1))
     print(im.shape, s.shape, g.shape, t.shape)
 
+
     checkpoint_callback = ModelCheckpoint(
         monitor="metrics/val_loss", save_weights_only=True, mode="max"
     )
