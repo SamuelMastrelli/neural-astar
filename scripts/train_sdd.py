@@ -9,13 +9,14 @@ from neural_astar.planner import NeuralAstar
 from neural_astar.utils.data_sdd import create_sdd_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint 
+import sys
 
 @hydra.main(config_path="config", config_name="train_sdd")
 def main(config):
 
     set_global_seeds(config.seed)
-    train_loader1 = create_sdd_dataloader(config.dataset + "video1", config.params.batch_size)
-    val_loader1 = create_sdd_dataloader(config.dataset + "video2", config.params.batch_size)
+    train_loader1 = create_sdd_dataloader(config.dataset, ["video1", "video2", "video3", "video4", "video5", "video6"], config.params.batch_size)
+    val_loader1 = create_sdd_dataloader(config.dataset, ["video0"], config.params.batch_size)
 
     neural_astar = NeuralAstar(   
         encoder_arch=config.encoder.arch,
@@ -29,6 +30,7 @@ def main(config):
     im, s, g, t = next(iter(train_loader1))
     print(im.shape, s.shape, g.shape, t.shape)
 
+    sys.exit()
 
     checkpoint_callback = ModelCheckpoint(
         monitor="metrics/val_loss", save_weights_only=True, mode="max"

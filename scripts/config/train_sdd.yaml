@@ -1,5 +1,5 @@
 seed: 1234
-dataset: "planning-datasets/data/sdd/s064_0.5_128_300/bookstore/"
+dataset: "planning-datasets/data/sdd/s064_0.5_128_300/"
 logdir: "model"
 Tmax: 0.25
 
