@@ -5,13 +5,13 @@ Tmax: 0.25
 
 encoder:
   input: "rgb+"
-  arch: "Unet"
+  arch: "CNN"
   depth: 3
   const: 10.0
 
 params:
   batch_size: 10
-  num_epochs: 10
+  num_epochs: 15
   lr: 0.001
 
 
