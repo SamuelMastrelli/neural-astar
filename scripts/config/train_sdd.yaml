@@ -1,5 +1,5 @@
 seed: 1234
-dataset: "planning-datasets/data/sdd/s064_0.5_128_300/"
+dataset: "planning-datasets/data/sdd/s064_0.5_128_300/little/"
 logdir: "model"
 Tmax: 0.25
 
@@ -10,7 +10,7 @@ encoder:
   const: 10.0
 
 params:
-  batch_size: 10
+  batch_size: 64
   num_epochs: 15
   lr: 0.001
 

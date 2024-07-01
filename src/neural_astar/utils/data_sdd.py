@@ -40,34 +40,34 @@ class SDD_Dataset(data.Dataset):
         start_images = []
         goal_images = []
         traj_images = []
-        for directory in os.listdir(dir):
-            for file in os.listdir(dir + directory):
-                video = os.fsdecode(file)
-                if video in videos:
-                    for fileV in os.listdir(dir + directory + "/" + video):   
-                        filename = os.fsdecode(fileV)
-                        if filename.endswith("npz"):
-                            (
-                                image,
-                                start_image,
-                                goal_image,
-                                traj_image,
-                            ) = self._process(directory, filename, video)
-                
-                            images.append(image)
-                            start_images.append(start_image)
-                            goal_images.append(goal_image)
-                            traj_images.append(traj_image)
-                    self.images = self.toTensor(tlist=images).permute(0, 3, 2, 1)
-                    self.start_images = self.toTensor(tlist=start_images).unsqueeze(1)
-                    self.goal_images = self.toTensor(tlist=goal_images).unsqueeze(1)
-                    self.traj_images = self.toTensor(tlist=traj_images).unsqueeze(1)
+ 
+        for file in os.listdir(dir):
+            video = os.fsdecode(file)
+            if video in videos:
+                for fileV in os.listdir(dir + video):
+                    filename = os.fsdecode(fileV)
+                    if filename.endswith("npz"):
+                        (
+                            image,
+                            start_image,
+                            goal_image,
+                            traj_image,
+                        ) = self._process(filename, video)
+            
+                        images.append(image)
+                        start_images.append(start_image)
+                        goal_images.append(goal_image)
+                        traj_images.append(traj_image)
+                self.images = self.toTensor(tlist=images).permute(0, 3, 1, 2)
+                self.start_images = self.toTensor(tlist=start_images).unsqueeze(1)
+                self.goal_images = self.toTensor(tlist=goal_images).unsqueeze(1)
+                self.traj_images = self.toTensor(tlist=traj_images).unsqueeze(1)
 
                 
 
 
-    def _process(self, directory: str,  filename: str, video: str):
-        with np.load(self.dirname + directory + "/" + video + "/" +filename) as f:
+    def _process(self,  filename: str, video: str):
+        with np.load(self.dirname + video + "/" +filename) as f:
             image = f["image"]
             start_image = f["start_image"]
             goal_image = f["goal_image"]
