@@ -1,17 +1,17 @@
 seed: 1234
-dataset: "planning-datasets/data/sdd/s064_0.5_128_300/little/"
+dataset: "planning-datasets/data/sdd/s064_0.5_128_300/bookstore/"
 logdir: "model"
 Tmax: 0.25
 
 encoder:
   input: "rgb+"
-  arch: "CNN"
+  arch: "Unet"
   depth: 3
   const: 10.0
 
 params:
   batch_size: 64
-  num_epochs: 15
+  num_epochs: 20
   lr: 0.001
 
 
