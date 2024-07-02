@@ -1,6 +1,6 @@
 # Path Planning using Neural A\* Search (ICML 2021)
 
-This is the official repository for the following paper:
+This is the fork of the official repository for the following paper:
 
 Ryo Yonetani*, Tatsunori Taniai*, Mohammadamin Barekatain, Mai Nishimura, Asako Kanezaki, "Path Planning using Neural A\* Search", ICML, 2021 [[paper]](https://arxiv.org/abs/2009.07476) [[project page]](https://omron-sinicx.github.io/neural-astar/)
 
