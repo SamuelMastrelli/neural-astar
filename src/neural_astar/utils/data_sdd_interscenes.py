@@ -45,7 +45,6 @@ class SDD_Dataset(data.Dataset):
             if location_name in locations:
                 for file in os.listdir(dir + location_name):
                     video = os.fsdecode(file)
-                    print(video)
                     for fileV in os.listdir(dir + location_name + "/"+ video):
                         filename = os.fsdecode(fileV)
                         if filename.endswith("npz"):
