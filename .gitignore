@@ -2,9 +2,7 @@
 build
 **/*.egg-info/
 **/__pycache__/
-**/lightning_logs
 **/.ipynb_checkpoints/
-model
 outputs
 gif
 30x30
