@@ -83,9 +83,9 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
 
             h_mean = 2.0 / (1.0 / (p_opt + 1e-10) + 1.0 / (p_exp + 1e-10))
 
-            self.log("metrics/p_opt", p_opt)
-            self.log("metrics/p_exp", p_exp)
-            self.log("metrics/h_mean", h_mean)
+            self.log("metrics/p_opt", p_opt, prog_bar=True)
+            self.log("metrics/p_exp", p_exp, prog_bar=True)
+            self.log("metrics/h_mean", h_mean, prog_bar=True)
 
         return loss
 

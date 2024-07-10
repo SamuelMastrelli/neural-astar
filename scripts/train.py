@@ -41,7 +41,7 @@ def main(config):
         Tmax=config.Tmax,
     )
     checkpoint_callback = ModelCheckpoint(
-        monitor="metrics/h_mean", save_weights_only=True, mode="max"
+        monitor="metrics/h_mean", save_weights_only=False, mode="max"
     )
 
 

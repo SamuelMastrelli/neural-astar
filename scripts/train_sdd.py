@@ -9,6 +9,7 @@ from neural_astar.planner import NeuralAstar
 from neural_astar.utils.data_sdd import create_sdd_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint 
+from pytorch_lightning.loggers import TensorBoardLogger
 import sys
 
 @hydra.main(config_path="config", config_name="train_sdd")
@@ -32,11 +33,13 @@ def main(config):
 
 
     checkpoint_callback = ModelCheckpoint(
-        monitor="metrics/val_loss", save_weights_only=True, mode="max"
+        monitor="metrics/val_loss", save_weights_only=False, mode="max"
     )
 
     module = PlannerModule(neural_astar, config)
     logdir= f"{config.logdir}/{os.path.basename(config.dataset)}"
+
+
     trainer = pl.Trainer(
         accelerator= "gpu" if torch.cuda.is_available() else "cpu",
         log_every_n_steps=1,
@@ -46,6 +49,7 @@ def main(config):
     )
 
     trainer.fit(module, train_loader1, val_loader1)
+
 
 
 if __name__ == "__main__":
