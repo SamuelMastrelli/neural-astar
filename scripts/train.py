@@ -29,8 +29,7 @@ def main(config):
     )
 
     im, s, g, t = next(iter(train_loader))
-    print(im.shape, s.shape, g.shape, t.shape)
-
+    print(s)
 
 
     neural_astar = NeuralAstar(
