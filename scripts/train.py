@@ -14,7 +14,7 @@ from neural_astar.utils.data import create_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint #salva periodicamente il modello monitorando delle quantita'
 import sys
-
+import matplotlib.pyplot as plt
 
 @hydra.main(config_path="config", config_name="train")
 def main(config):
