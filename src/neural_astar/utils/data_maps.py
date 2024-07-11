@@ -6,7 +6,9 @@ import torch.utils.data as data
 from neural_astar.planner.differentiable_astar import AstarOutput
 from PIL import Image
 from torchvision.utils import make_grid
+import torchvision.transforms as transforms
 import os
+
 
 def create_dataloader(
         self,
@@ -54,6 +56,14 @@ class Map_dataset(data.Dataset):
 
     def _process(self, image: str):
         #Da immagine a tensore
+         transform = transforms.Compose([
+                transforms.PILToTensor()
+            ])
+         img = Image.open(self.dir + "/" + self.cluster + "/" + image)
+         map_design = transform(img)
+         map_design[map_design==255] = 0
+         map_design[map_design!=255] = 1
+         map_design = self.resize_tensor(map_design, (1700, 1700))
         #Grafo di voronoi
         #Scelta goal, dijkstra 
         #Scelta start e ricavo percorso
