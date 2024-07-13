@@ -8,7 +8,8 @@ from PIL import Image
 from torchvision.utils import make_grid
 import torchvision.transforms as transforms
 import os
-
+from voronoi_utilities.voronoi_graph_generator import VoronoiGraphGenerator
+from voronoi_utilities.Graph.voronoi_graph import Coordinate, Node, Graph
 
 def create_dataloader(
         self,
@@ -29,6 +30,7 @@ class Map_dataset(data.Dataset):
             cluster: str,
         ):
         self.dir = dir 
+        self.cluster = cluster
         dirname = os.fsdecode(dir)
         maps_design = []
         starts = []
@@ -56,15 +58,21 @@ class Map_dataset(data.Dataset):
 
     def _process(self, image: str):
         #Da immagine a tensore
-         transform = transforms.Compose([
+        transform = transforms.Compose([
                 transforms.PILToTensor()
             ])
-         img = Image.open(self.dir + "/" + self.cluster + "/" + image)
-         map_design = transform(img)
-         map_design[map_design==255] = 0
-         map_design[map_design!=255] = 1
-         map_design = self.resize_tensor(map_design, (1700, 1700))
+        img = Image.open(self.dir + "/" + self.cluster + "/" + image)
+        map_design = transform(img)
+        map_design[map_design==255] = 0
+        map_design[map_design!=255] = 1
+        map_design = self.resize_tensor(map_design, (1700, 1700))
         #Grafo di voronoi
+        split = image.split('_')
+        env_name = split[0]
+        floor = int(split[2].split('.')[0])
+         
+        voornoi_graph_generator = VoronoiGraphGenerator(cluster=self.cluster, env_name=env_name, floor=floor)
+        graph = voornoi_graph_generator.get_voronoi_graph()
         #Scelta goal, dijkstra 
         #Scelta start e ricavo percorso
 
