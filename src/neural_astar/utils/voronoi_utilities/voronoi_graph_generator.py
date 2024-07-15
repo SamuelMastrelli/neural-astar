@@ -213,7 +213,7 @@ class VoronoiGraphGenerator:
             # Save voronoi bitmap
             cv2.imwrite(os.path.join(
                 os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
-                self._env_name + '_floor_' self._floor + '.png'),
+                self._env_name + '_floor_' + self._floor + '.png'),
                 self._voronoi_bitmap)
 
             # Save map + voronoi bitmap
@@ -221,7 +221,7 @@ class VoronoiGraphGenerator:
             map_voronoi_bitmap[self._voronoi_bitmap == 0] = 0
             cv2.imwrite(os.path.join(
                 os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_with_voronoi_bitmaps',
-                self._env_name + '_floor_' self._floor + '.png'),
+                self._env_name + '_floor_' +  self._floor + '.png'),
                 map_voronoi_bitmap)
 
         return self._voronoi_bitmap
@@ -243,13 +243,14 @@ class VoronoiGraphGenerator:
             for neighbor in current_node.get_connected_nodes():
                 if neighbor not in visited:
                     queue.append(neighbor)
+        return reachable_nodes
                     
     def select_reachable_nodes(self) -> Tuple[Node, Node]:
         nodes = list(self._graph.get_nodes().values())
         random_start_node = random.choice(nodes)
         reachable_nodes = self.get_reachable_nodes(random_start_node)
 
-        if len(reachable_nodes) < 2:
+        if reachable_nodes is None or len(reachable_nodes) < 2:
             raise ValueError("Not enough reachable nodes")
         
         random_end_node = random.choice(reachable_nodes)
@@ -274,7 +275,7 @@ class VoronoiGraphGenerator:
             if current == end:
                 return self.reconstruct_path(came_from, current)
 
-            for neighbor in graph.get_nodes()[current].get_neighbors():
+            for neighbor in graph.get_nodes()[Coordinate(current[0], current[1], self._map_origin, self._scale)].get_neighbors():
                 tentative_g_score = g_score[current] + self.dist_between(current, neighbor.get_coordinate().to_img_index())
                 if tentative_g_score < g_score[neighbor.get_coordinate().to_img_index()]:
                     came_from[neighbor.get_coordinate().to_img_index()] = current

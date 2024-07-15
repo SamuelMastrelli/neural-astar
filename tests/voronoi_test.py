@@ -48,6 +48,8 @@ def test_start_goal_shortest_path():
     hs = voronoi_graph_generator.find_shortest_path(e, s)
   
     path_bitmap = voronoi_graph_generator.draw_path_on_bitmap(sh)
+    cv2.imwrite('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap.png', path_bitmap)
+    cv2.imshow('Shortest Path',  path_bitmap)
 
     assert np.array_equal(sh, hs)
 
