@@ -6,13 +6,15 @@ https://github.com/micheleantonazzi/gibson-env-utilities/blob/main/gibson_env_ut
 
 import os
 from typing import List, Tuple, Dict, Set, Union
-
+import heapq
 import cv2
 import yaml
 import numpy as np
 import sys
 from skimage.morphology import skeletonize
 from termcolor import colored
+from collections import deque
+import random
 
 from neural_astar.utils.voronoi_utilities.Graph.voronoi_graph import Coordinate, Graph, Node
 
@@ -210,19 +212,95 @@ class VoronoiGraphGenerator:
         if save_to_file:
             # Save voronoi bitmap
             cv2.imwrite(os.path.join(
-                os.path.dirname(__file__), 'data', 'voronoi_bitmaps',
-                GibsonAssetsUtilities.GET_FILE_NAME(self._env_name, self._floor) + '.png'),
+                os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
+                self._env_name + '_floor_' self._floor + '.png'),
                 self._voronoi_bitmap)
 
             # Save map + voronoi bitmap
             map_voronoi_bitmap = self._map.copy()
             map_voronoi_bitmap[self._voronoi_bitmap == 0] = 0
             cv2.imwrite(os.path.join(
-                os.path.dirname(__file__), 'data', 'maps_with_voronoi_bitmaps',
-                GibsonAssetsUtilities.GET_FILE_NAME(self._env_name, self._floor) + '.png'),
+                os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_with_voronoi_bitmaps',
+                self._env_name + '_floor_' self._floor + '.png'),
                 map_voronoi_bitmap)
 
         return self._voronoi_bitmap
 
     def get_map(self) -> np.array:
         return self._map
+    
+    def get_reachable_nodes(self, start_node: Node) -> List[Node]:
+        visited = set()
+        queue = deque([start_node])
+        reachable_nodes = []
+
+        while queue:
+            current_node = queue.popleft()
+            if current_node in visited:
+                continue
+            visited.add(current_node)
+            reachable_nodes.append(current_node)
+            for neighbor in current_node.get_connected_nodes():
+                if neighbor not in visited:
+                    queue.append(neighbor)
+                    
+    def select_reachable_nodes(self) -> Tuple[Node, Node]:
+        nodes = list(self._graph.get_nodes().values())
+        random_start_node = random.choice(nodes)
+        reachable_nodes = self.get_reachable_nodes(random_start_node)
+
+        if len(reachable_nodes) < 2:
+            raise ValueError("Not enough reachable nodes")
+        
+        random_end_node = random.choice(reachable_nodes)
+        while random_start_node == random_end_node:
+            random_end_node = random.choice(reachable_nodes)
+
+        return random_start_node, random_end_node
+
+    def find_shortest_path(self, start: Tuple[int, int], end: Tuple[int, int]) -> List[Tuple[int, int]]:
+        graph = self._graph
+        open_set = []
+        heapq.heappush(open_set, (0, start))
+        came_from = {}
+        g_score = {node: float('inf') for node in graph.get_nodes()}
+        g_score[start] = 0
+        f_score = {node: float('inf') for node in graph.get_nodes()}
+        f_score[start] = self.heuristic(start, end)
+
+        while open_set:
+            current = heapq.heappop(open_set)[1]
+
+            if current == end:
+                return self.reconstruct_path(came_from, current)
+
+            for neighbor in graph.get_nodes()[current].get_neighbors():
+                tentative_g_score = g_score[current] + self.dist_between(current, neighbor.get_coordinate().to_img_index())
+                if tentative_g_score < g_score[neighbor.get_coordinate().to_img_index()]:
+                    came_from[neighbor.get_coordinate().to_img_index()] = current
+                    g_score[neighbor.get_coordinate().to_img_index()] = tentative_g_score
+                    f_score[neighbor.get_coordinate().to_img_index()] = tentative_g_score + self.heuristic(neighbor.get_coordinate().to_img_index(), end)
+                    if neighbor.get_coordinate().to_img_index() not in [i[1] for i in open_set]:
+                        heapq.heappush(open_set, (f_score[neighbor.get_coordinate().to_img_index()], neighbor.get_coordinate().to_img_index()))
+
+        return []
+
+    def heuristic(self, a: Tuple[int, int], b: Tuple[int, int]) -> float:
+        return np.linalg.norm(np.array(a) - np.array(b))
+
+    def dist_between(self, a: Tuple[int, int], b: Tuple[int, int]) -> float:
+        return np.linalg.norm(np.array(a) - np.array(b))
+
+    def reconstruct_path(self, came_from: Dict[Tuple[int, int], Tuple[int, int]], current: Tuple[int, int]) -> List[Tuple[int, int]]:
+        total_path = [current]
+        while current in came_from:
+            current = came_from[current]
+            total_path.append(current)
+        total_path.reverse()
+        return total_path
+
+    def draw_path_on_bitmap(self, path: List[Tuple[int, int]]) -> np.array:
+        path_bitmap = self._voronoi_bitmap.copy()
+        for i in range(len(path) - 1):
+            cv2.line(path_bitmap, path[i][::-1], path[i + 1][::-1], color=0, thickness=2)
+        return path_bitmap
