@@ -11,6 +11,7 @@ def test_voronoi_bitmap():
     voronoi_bitmap = voornoi_graph_generator.generate_voronoi_bitmap()
     graph = voornoi_graph_generator.get_voronoi_graph()
 
+
     assert np.array_equal(graph.get_graph_bitmap(), voronoi_bitmap)
 
 def test_graph_nodes():
@@ -37,19 +38,24 @@ def test_graph_connected_components():
 
 def test_start_goal_shortest_path():
     voronoi_graph_generator = VoronoiGraphGenerator(cluster='train', env_name='house1', floor=0)
-    voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
-    graph = voronoi_graph_generator.get_voronoi_graph()
+    vb = voronoi_graph_generator.generate_voronoi_bitmap()
 
     start, end = voronoi_graph_generator.select_reachable_nodes()
-    s = start.get_coordinate().to_img_index()
-    e = end.get_coordinate().to_img_index()
+    s = start
+    e = end
+
+    print(s.get_coordinate().get_x_y_tuple(), e.get_coordinate().get_x_y_tuple())
 
     sh = voronoi_graph_generator.find_shortest_path(s, e)
     hs = voronoi_graph_generator.find_shortest_path(e, s)
   
     path_bitmap = voronoi_graph_generator.draw_path_on_bitmap(sh)
-    cv2.imwrite('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap.png', path_bitmap)
-    cv2.imshow('Shortest Path',  path_bitmap)
+    path_bitmap1 = voronoi_graph_generator.draw_path_on_bitmap(hs)
 
-    assert np.array_equal(sh, hs)
+    cv2.imwrite('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap.png', path_bitmap)
+    cv2.imwrite('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap1.png', path_bitmap1)
+
+    hs.reverse()
+
+    assert np.array_equal(voronoi_graph_generator.to_numpy_array(sh), voronoi_graph_generator.to_numpy_array(hs))
 

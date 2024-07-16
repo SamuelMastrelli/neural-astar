@@ -259,40 +259,39 @@ class VoronoiGraphGenerator:
 
         return random_start_node, random_end_node
 
-    def find_shortest_path(self, start: Tuple[int, int], end: Tuple[int, int]) -> List[Tuple[int, int]]:
+    def find_shortest_path(self, start: Node, end: Node) -> List[Node]:
         graph = self._graph
         open_set = []
-        heapq.heappush(open_set, (0, start))
+        heapq.heappush(open_set, (0.0, start))
         came_from = {}
-        g_score = {node: float('inf') for node in graph.get_nodes()}
+        g_score = {node: float('inf') for node in graph.get_nodes().values()}
         g_score[start] = 0
-        f_score = {node: float('inf') for node in graph.get_nodes()}
-        f_score[start] = self.heuristic(start, end)
+        f_score = {node: float('inf') for node in graph.get_nodes().values()}
+        f_score[start] = self.dist_between(start, end)
 
         while open_set:
             current = heapq.heappop(open_set)[1]
 
             if current == end:
                 return self.reconstruct_path(came_from, current)
+            
 
-            for neighbor in graph.get_nodes()[Coordinate(current[0], current[1], self._map_origin, self._scale)].get_neighbors():
-                tentative_g_score = g_score[current] + self.dist_between(current, neighbor.get_coordinate().to_img_index())
-                if tentative_g_score < g_score[neighbor.get_coordinate().to_img_index()]:
-                    came_from[neighbor.get_coordinate().to_img_index()] = current
-                    g_score[neighbor.get_coordinate().to_img_index()] = tentative_g_score
-                    f_score[neighbor.get_coordinate().to_img_index()] = tentative_g_score + self.heuristic(neighbor.get_coordinate().to_img_index(), end)
-                    if neighbor.get_coordinate().to_img_index() not in [i[1] for i in open_set]:
-                        heapq.heappush(open_set, (f_score[neighbor.get_coordinate().to_img_index()], neighbor.get_coordinate().to_img_index()))
+            for neighbor in current.get_connected_nodes():
+                tentative_g_score = g_score[current] + self.dist_between(current, neighbor)
+                if tentative_g_score < g_score[neighbor]:
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = tentative_g_score + self.dist_between(neighbor, end)
+                    if neighbor not in [i[1] for i in open_set]:
+                        heapq.heappush(open_set, (f_score[neighbor], neighbor))
 
         return []
 
-    def heuristic(self, a: Tuple[int, int], b: Tuple[int, int]) -> float:
-        return np.linalg.norm(np.array(a) - np.array(b))
 
-    def dist_between(self, a: Tuple[int, int], b: Tuple[int, int]) -> float:
-        return np.linalg.norm(np.array(a) - np.array(b))
+    def dist_between(self, a: Node, b: Node) -> float:
+        return np.linalg.norm(np.array(a.get_coordinate().get_x_y_tuple()) - np.array(b.get_coordinate().get_x_y_tuple()))
 
-    def reconstruct_path(self, came_from: Dict[Tuple[int, int], Tuple[int, int]], current: Tuple[int, int]) -> List[Tuple[int, int]]:
+    def reconstruct_path(self, came_from: Dict[Node, Node], current: Node) -> List[Node]:
         total_path = [current]
         while current in came_from:
             current = came_from[current]
@@ -300,8 +299,17 @@ class VoronoiGraphGenerator:
         total_path.reverse()
         return total_path
 
-    def draw_path_on_bitmap(self, path: List[Tuple[int, int]]) -> np.array:
+    def draw_path_on_bitmap(self, path: List[Node]) -> np.array:
         path_bitmap = self._voronoi_bitmap.copy()
         for i in range(len(path) - 1):
-            cv2.line(path_bitmap, path[i][::-1], path[i + 1][::-1], color=0, thickness=2)
+            x, y = path[i].get_coordinate().get_x_y_tuple()
+            x1, y1 = path[i + 1].get_coordinate().get_x_y_tuple()
+            cv2.line(path_bitmap, (x, y), (x1, y1), color=0, thickness=2)
         return path_bitmap
+    
+    def to_numpy_array(self, st: List[Node]) -> np.array:
+        array = np.full(self._map.shape, 255.0)
+        for node in st:
+            x,y = node.get_coordinate().get_x_y_tuple()
+            array[x, y] = 0.0
+        return array
