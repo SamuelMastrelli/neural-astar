@@ -71,15 +71,29 @@ class Map_dataset(data.Dataset):
         env_name = split[0]
         floor = int(split[2].split('.')[0])
          
-        voornoi_graph_generator = VoronoiGraphGenerator(cluster=self.cluster, env_name=env_name, floor=floor)
-        graph = voornoi_graph_generator.get_voronoi_graph()
-        #Scelta goal, dijkstra 
-        #Scelta start e ricavo percorso
-
-
-    def __getitem__(self, index):
+        voronoi_graph_generator = VoronoiGraphGenerator(cluster=self.cluster, env_name=env_name, floor=floor)
+        voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
+        graph = voronoi_graph_generator.get_voronoi_graph()
+        #Scelta goal e start
+        start, goal = voronoi_graph_generator.select_reachable_nodes()
+        start_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])))
+        goal_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])))
+        #path ottimo
+        path = voronoi_graph_generator.to_numpy_array(voronoi_graph_generator.find_shortest_path(start, goal))
+        opt_traj = self.resize_tensor(torch.from_numpy(path), (1700, 1700))
         
 
+        return map_design, start_map, goal_map, opt_traj
+
+
+
+    def __getitem__(self, index: int):
+        map = self.maps_design[index]
+        start_map = self.starts[index]
+        goal_map = self.goals[index]
+        opt_traj = self.opt_trajs[index]
+
+        return map, start_map, goal_map, opt_traj
 
     def __len__(self):
         return self.maps_design.shape[0]
@@ -94,22 +108,22 @@ class Map_dataset(data.Dataset):
         return result
     
 
-    def resize_tensor(tensor, new_shape):
+    def resize_tensor(self, tensor: torch.Tensor, new_shape):
         """
         Ridimensiona un tensore a nuove dimensioni, aggiungendo padding di zeri se necessario
         o tagliando il tensore se le nuove dimensioni sono più piccole.
         
         Parameters:
-        tensor (np.ndarray): Il tensore originale.
+        tensor (torch.Tensor): Il tensore originale.
         new_shape (tuple): Le nuove dimensioni desiderate (rows, cols).
         
         Returns:
-        np.ndarray: Il tensore ridimensionato.
+        torch.Tensor: Il tensore ridimensionato.
         """
         original_shape = tensor.shape
         
         # Crea un nuovo tensore pieno di zeri con le dimensioni specificate
-        new_tensor = np.zeros(new_shape, dtype=tensor.dtype)
+        new_tensor = torch.zeros(new_shape, dtype=tensor.dtype)
         
         # Calcola gli offset per centrare il tensore originale nel nuovo tensore
         offset_row = (new_shape[0] - original_shape[0]) // 2
