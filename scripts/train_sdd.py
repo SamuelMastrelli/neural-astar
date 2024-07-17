@@ -9,7 +9,6 @@ from neural_astar.planner import NeuralAstar
 from neural_astar.utils.data_sdd import create_sdd_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint 
-from pytorch_lightning.loggers import TensorBoardLogger
 import sys
 
 @hydra.main(config_path="config", config_name="train_sdd")

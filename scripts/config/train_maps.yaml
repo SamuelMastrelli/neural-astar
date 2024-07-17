@@ -1,15 +1,17 @@
 seed: 1234
-dataset: "planning-datasets/data/street/mixed_064_moore_c16"
+dataset: "src/neural_astar/utils/voronoi_utilities/maps_data/maps"
 logdir: "model"
 Tmax: 0.25
+
 
 encoder:
   input: "m+"
   arch: "CNN"
   depth: 4
 
-params:
-  batch_size: 100
+
+params: 
+  batch_size:  32
   num_epochs: 50
   lr: 0.001
 
