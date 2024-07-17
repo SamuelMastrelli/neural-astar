@@ -127,6 +127,10 @@ class Node:
     def get_connected_nodes_count(self) -> int:
         return len(self._connected_nodes)
 
+    def __lt__(self, other):
+        return True
+
+
     def __eq__(self, other):
         return isinstance(other, Node) and self._coordinate.__eq__(other._coordinate)
 

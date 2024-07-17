@@ -8,11 +8,10 @@ from PIL import Image
 from torchvision.utils import make_grid
 import torchvision.transforms as transforms
 import os
-from voronoi_utilities.voronoi_graph_generator import VoronoiGraphGenerator
-from voronoi_utilities.Graph.voronoi_graph import Coordinate, Node, Graph
+from neural_astar.utils.voronoi_utilities.voronoi_graph_generator import VoronoiGraphGenerator
+from neural_astar.utils.voronoi_utilities.Graph.voronoi_graph import Coordinate, Node, Graph
 
 def create_dataloader(
-        self,
         dir: str,
         cluster: str,
         batch_size: int
@@ -65,7 +64,7 @@ class Map_dataset(data.Dataset):
         map_design = transform(img)
         map_design[map_design==255] = 0
         map_design[map_design!=255] = 1
-        map_design = self.resize_tensor(map_design, (1700, 1700))
+        map_design = self.resize_tensor(map_design[0], (1700, 1700))
         #Grafo di voronoi
         split = image.split('_')
         env_name = split[0]
@@ -76,14 +75,14 @@ class Map_dataset(data.Dataset):
         graph = voronoi_graph_generator.get_voronoi_graph()
         #Scelta goal e start
         start, goal = voronoi_graph_generator.select_reachable_nodes()
-        start_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])))
-        goal_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])))
+        start_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])), (1700, 1700))
+        goal_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])), (1700, 1700))
         #path ottimo
         path = voronoi_graph_generator.to_numpy_array(voronoi_graph_generator.find_shortest_path(start, goal))
         opt_traj = self.resize_tensor(torch.from_numpy(path), (1700, 1700))
-        
 
         return map_design, start_map, goal_map, opt_traj
+
 
 
 
@@ -108,7 +107,7 @@ class Map_dataset(data.Dataset):
         return result
     
 
-    def resize_tensor(self, tensor: torch.Tensor, new_shape):
+    def resize_tensor(self, tensor, new_shape: tuple):
         """
         Ridimensiona un tensore a nuove dimensioni, aggiungendo padding di zeri se necessario
         o tagliando il tensore se le nuove dimensioni sono più piccole.

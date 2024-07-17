@@ -14,7 +14,7 @@ from neural_astar.planner import NeuralAstar
 from neural_astar.utils.data_maps import create_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint
-
+import sys
 
 @hydra.main(config_path="config", config_name="train_maps")
 def main(config):
@@ -30,6 +30,11 @@ def main(config):
         learn_obstacles=False,
         Tmax=config.Tmax,
     )
+
+    m, s, g, t = next(iter(train_loader))
+    print(m.shape, s.shape, g.shape, t.shape)
+
+    sys.exit()
 
     checkpoint_callbacks = ModelCheckpoint(
         monitor="metrics/h_mean", save_weights_only=False, mode="max"
