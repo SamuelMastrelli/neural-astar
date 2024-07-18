@@ -7,7 +7,7 @@ def test_voronoi_bitmap():
     with pytest.raises(FileNotFoundError):
         VoronoiGraphGenerator(cluster='train', env_name="house-1", floor=0)
 
-    voornoi_graph_generator = VoronoiGraphGenerator(cluster='train', env_name='house1', floor=0)
+    voornoi_graph_generator = VoronoiGraphGenerator(cluster='train', env_name='area3', floor=0)
     voronoi_bitmap = voornoi_graph_generator.generate_voronoi_bitmap()
     graph = voornoi_graph_generator.get_voronoi_graph()
 
@@ -15,7 +15,7 @@ def test_voronoi_bitmap():
     assert np.array_equal(graph.get_graph_bitmap(), voronoi_bitmap)
 
 def test_graph_nodes():
-    voronoi_graph_generator = VoronoiGraphGenerator(cluster='train',env_name='house1', floor=0)
+    voronoi_graph_generator = VoronoiGraphGenerator(cluster='train',env_name='area3', floor=0)
     voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
     graph = voronoi_graph_generator.get_voronoi_graph()
 
@@ -25,7 +25,7 @@ def test_graph_nodes():
 
 
 def test_graph_connected_components():
-    voronoi_graph_generator = VoronoiGraphGenerator(cluster='train', env_name='house1', floor=0)
+    voronoi_graph_generator = VoronoiGraphGenerator(cluster='train', env_name='area3', floor=0)
     voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
     graph = voronoi_graph_generator.get_voronoi_graph()
 
@@ -37,14 +37,10 @@ def test_graph_connected_components():
     assert np.array_equal(components_image, voronoi_bitmap)
 
 def test_start_goal_shortest_path():
-    voronoi_graph_generator = VoronoiGraphGenerator(cluster='train', env_name='house1', floor=0)
+    voronoi_graph_generator = VoronoiGraphGenerator(cluster='train', env_name='area3', floor=0)
     vb = voronoi_graph_generator.generate_voronoi_bitmap()
 
-    start, end = voronoi_graph_generator.select_reachable_nodes()
-    s = start
-    e = end
-
-    print(s.get_coordinate().get_x_y_tuple(), e.get_coordinate().get_x_y_tuple())
+    s, e = voronoi_graph_generator.select_reachable_nodes()
 
     sh = voronoi_graph_generator.find_shortest_path(s, e)
     hs = voronoi_graph_generator.find_shortest_path(e, s)
@@ -52,8 +48,8 @@ def test_start_goal_shortest_path():
     path_bitmap = voronoi_graph_generator.draw_path_on_bitmap(sh)
     path_bitmap1 = voronoi_graph_generator.draw_path_on_bitmap(hs)
 
-    cv2.imwrite('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap.png', path_bitmap)
-    cv2.imwrite('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap1.png', path_bitmap1)
+    cv2.imwrite('C:/Users/User/Desktop/uni/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap.png', path_bitmap)
+    cv2.imwrite('C:/Users/User/Desktop/uni/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap1.png', path_bitmap1)
 
     hs.reverse()
 

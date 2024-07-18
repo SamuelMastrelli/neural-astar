@@ -28,6 +28,7 @@ class Map_dataset(data.Dataset):
             dir: str,
             cluster: str,
         ):
+        
         self.dir = dir 
         self.cluster = cluster
         dirname = os.fsdecode(dir)
@@ -44,6 +45,8 @@ class Map_dataset(data.Dataset):
                 opt_traj,
             ) = self._process(image)
 
+            
+
             maps_design.append(map_design)
             starts.append(start)
             goals.append(goal)
@@ -54,6 +57,8 @@ class Map_dataset(data.Dataset):
         self.goals = self.toTensor(tlist=goals).unsqueeze(1)
         self.opt_trajs = self.toTensor(tlist=opt_trajs).unsqueeze(1)
 
+        
+
 
     def _process(self, image: str):
         #Da immagine a tensore
@@ -61,25 +66,36 @@ class Map_dataset(data.Dataset):
                 transforms.PILToTensor()
             ])
         img = Image.open(self.dir + "/" + self.cluster + "/" + image)
+        
         map_design = transform(img)
         map_design[map_design==255] = 0
         map_design[map_design!=255] = 1
+
+        
+
         map_design = self.resize_tensor(map_design[0], (1700, 1700))
+
+        
+
         #Grafo di voronoi
         split = image.split('_')
         env_name = split[0]
         floor = int(split[2].split('.')[0])
+
+        
          
         voronoi_graph_generator = VoronoiGraphGenerator(cluster=self.cluster, env_name=env_name, floor=floor)
         voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
+        print(image)
         graph = voronoi_graph_generator.get_voronoi_graph()
+        
         #Scelta goal e start
         start, goal = voronoi_graph_generator.select_reachable_nodes()
-        start_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])), (1700, 1700))
-        goal_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])), (1700, 1700))
+        start_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([start]))
+        goal_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal]))
         #path ottimo
         path = voronoi_graph_generator.to_numpy_array(voronoi_graph_generator.find_shortest_path(start, goal))
-        opt_traj = self.resize_tensor(torch.from_numpy(path), (1700, 1700))
+        opt_traj = torch.from_numpy(path)
 
         return map_design, start_map, goal_map, opt_traj
 

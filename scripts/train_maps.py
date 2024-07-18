@@ -22,6 +22,10 @@ def main(config):
     train_loader = create_dataloader(dir=config.dataset, cluster="train", batch_size=config.params.batch_size)
     val_loader = create_dataloader(dir=config.dataset, cluster="validation", batch_size=config.params.batch_size)
 
+    m, s, g, t = next(iter(train_loader))
+    print(m.shape, s.shape, g.shape, t.shape)
+
+
     neural_astar = NeuralAstar(
         encoder_arch=config.encoder.arch,
         encoder_depth=config.encoder.depth,
@@ -31,10 +35,8 @@ def main(config):
         Tmax=config.Tmax,
     )
 
-    m, s, g, t = next(iter(train_loader))
-    print(m.shape, s.shape, g.shape, t.shape)
+ 
 
-    sys.exit()
 
     checkpoint_callbacks = ModelCheckpoint(
         monitor="metrics/h_mean", save_weights_only=False, mode="max"
