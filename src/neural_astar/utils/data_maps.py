@@ -86,16 +86,15 @@ class Map_dataset(data.Dataset):
          
         voronoi_graph_generator = VoronoiGraphGenerator(cluster=self.cluster, env_name=env_name, floor=floor)
         voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
-        print(image)
         graph = voronoi_graph_generator.get_voronoi_graph()
         
         #Scelta goal e start
         start, goal = voronoi_graph_generator.select_reachable_nodes()
-        start_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([start]))
-        goal_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal]))
+        start_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])), (1700, 1700))
+        goal_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])), (1700, 1700))
         #path ottimo
         path = voronoi_graph_generator.to_numpy_array(voronoi_graph_generator.find_shortest_path(start, goal))
-        opt_traj = torch.from_numpy(path)
+        opt_traj = self.resize_tensor(torch.from_numpy(path), (1700, 1700))
 
         return map_design, start_map, goal_map, opt_traj
 

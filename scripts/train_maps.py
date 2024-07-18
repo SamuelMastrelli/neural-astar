@@ -18,6 +18,7 @@ import sys
 
 @hydra.main(config_path="config", config_name="train_maps")
 def main(config):
+    torch.cuda.empty_cache()
     set_global_seeds(config.seed)
     train_loader = create_dataloader(dir=config.dataset, cluster="train", batch_size=config.params.batch_size)
     val_loader = create_dataloader(dir=config.dataset, cluster="validation", batch_size=config.params.batch_size)
@@ -26,11 +27,12 @@ def main(config):
     print(m.shape, s.shape, g.shape, t.shape)
 
 
+    sys.exit()
+
     neural_astar = NeuralAstar(
         encoder_arch=config.encoder.arch,
         encoder_depth=config.encoder.depth,
         encoder_input=config.encoder.input,
-        const=config.encoder.const,
         learn_obstacles=False,
         Tmax=config.Tmax,
     )
