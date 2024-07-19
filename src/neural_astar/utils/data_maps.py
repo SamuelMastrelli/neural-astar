@@ -5,7 +5,6 @@ import torch
 import torch.utils.data as data
 from neural_astar.planner.differentiable_astar import AstarOutput
 from PIL import Image
-from torchvision.utils import make_grid
 import torchvision.transforms as transforms
 import os
 from neural_astar.utils.voronoi_utilities.voronoi_graph_generator import VoronoiGraphGenerator
@@ -66,16 +65,14 @@ class Map_dataset(data.Dataset):
                 transforms.PILToTensor()
             ])
         img = Image.open(self.dir + "/" + self.cluster + "/" + image)
-        
-        map_design = transform(img)
+    
+
+        tr = transforms.Resize(500)
+        res = tr(img)
+
+        map_design = transform(res)[0]
         map_design[map_design==255] = 0
         map_design[map_design!=255] = 1
-
-        
-
-        map_design = self.resize_tensor(map_design[0], (1700, 1700))
-
-        
 
         #Grafo di voronoi
         split = image.split('_')
@@ -90,11 +87,11 @@ class Map_dataset(data.Dataset):
         
         #Scelta goal e start
         start, goal = voronoi_graph_generator.select_reachable_nodes()
-        start_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])), (1700, 1700))
-        goal_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])), (1700, 1700))
+        start_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])), (500, 500))
+        goal_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])), (500, 500))
         #path ottimo
         path = voronoi_graph_generator.to_numpy_array(voronoi_graph_generator.find_shortest_path(start, goal))
-        opt_traj = self.resize_tensor(torch.from_numpy(path), (1700, 1700))
+        opt_traj = self.resize_tensor(torch.from_numpy(path), (500, 500))
 
         return map_design, start_map, goal_map, opt_traj
 

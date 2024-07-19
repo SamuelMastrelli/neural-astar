@@ -27,7 +27,6 @@ def main(config):
     print(m.shape, s.shape, g.shape, t.shape)
 
 
-    sys.exit()
 
     neural_astar = NeuralAstar(
         encoder_arch=config.encoder.arch,
