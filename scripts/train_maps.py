@@ -20,13 +20,13 @@ import sys
 def main(config):
     torch.cuda.empty_cache()
     set_global_seeds(config.seed)
-    train_loader = create_dataloader(dir=config.dataset, cluster="train", batch_size=config.params.batch_size)
-    val_loader = create_dataloader(dir=config.dataset, cluster="validation", batch_size=config.params.batch_size)
+    train_loader = create_dataloader(dir=config.dataset, cluster="train_resized", batch_size=config.params.batch_size)
+    val_loader = create_dataloader(dir=config.dataset, cluster="validation_resized", batch_size=config.params.batch_size)
 
     m, s, g, t = next(iter(train_loader))
     print(m.shape, s.shape, g.shape, t.shape)
 
-
+  
 
     neural_astar = NeuralAstar(
         encoder_arch=config.encoder.arch,

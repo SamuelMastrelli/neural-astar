@@ -67,17 +67,15 @@ class Map_dataset(data.Dataset):
         img = Image.open(self.dir + "/" + self.cluster + "/" + image)
     
 
-        tr = transforms.Resize(500)
-        res = tr(img)
-
-        map_design = transform(res)[0]
+        map_design = transform(img)[0]
         map_design[map_design==255] = 0
         map_design[map_design!=255] = 1
 
+
         #Grafo di voronoi
-        split = image.split('_')
+        split = image.split('_floor_')
         env_name = split[0]
-        floor = int(split[2].split('.')[0])
+        floor = int(split[1].split('.')[0])
 
         
          
@@ -87,11 +85,11 @@ class Map_dataset(data.Dataset):
         
         #Scelta goal e start
         start, goal = voronoi_graph_generator.select_reachable_nodes()
-        start_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])), (500, 500))
-        goal_map = self.resize_tensor(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])), (500, 500))
+        start_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([start]))
+        goal_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal]))
         #path ottimo
         path = voronoi_graph_generator.to_numpy_array(voronoi_graph_generator.find_shortest_path(start, goal))
-        opt_traj = self.resize_tensor(torch.from_numpy(path), (500, 500))
+        opt_traj = torch.from_numpy(path)
 
         return map_design, start_map, goal_map, opt_traj
 
