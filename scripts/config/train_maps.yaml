@@ -11,8 +11,8 @@ encoder:
 
 
 params: 
-  batch_size:  5
-  num_epochs: 20
+  batch_size:  20
+  num_epochs: 30
   lr: 0.001
 
 

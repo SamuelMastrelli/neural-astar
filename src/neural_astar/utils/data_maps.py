@@ -61,16 +61,17 @@ class Map_dataset(data.Dataset):
 
     def _process(self, image: str):
         #Da immagine a tensore
-        transform = transforms.Compose([
-                transforms.PILToTensor()
-            ])
+
         img = Image.open(self.dir + "/" + self.cluster + "/" + image)
-    
 
-        map_design = transform(img)[0]
-        map_design[map_design==255] = 0
-        map_design[map_design!=255] = 1
+        gray_image = img.convert("L")
 
+        # Applica una soglia per ottenere un'immagine binaria
+        threshold = 128
+        binary_image = gray_image.point(lambda p: p > threshold and 1)
+
+        # Converti l'immagine binaria in un array numpy
+        map_design = torch.from_numpy(np.array(binary_image, dtype=np.uint8))
 
         #Grafo di voronoi
         split = image.split('_floor_')
