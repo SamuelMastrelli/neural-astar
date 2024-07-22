@@ -15,6 +15,8 @@ from neural_astar.utils.data_maps import create_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint
 import sys
+import os
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
 @hydra.main(config_path="config", config_name="train_maps")
 def main(config):
@@ -40,7 +42,7 @@ def main(config):
 
 
     checkpoint_callbacks = ModelCheckpoint(
-        monitor="metrics/h_mean", save_weights_only=True, mode="max"
+        monitor="metrics/h_mean", save_weights_only=False, mode="max"
     )
 
     module = PlannerModule(neural_astar, config)
