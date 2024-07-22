@@ -40,7 +40,7 @@ def main(config):
 
 
     checkpoint_callbacks = ModelCheckpoint(
-        monitor="metrics/h_mean", save_weights_only=False, mode="max"
+        monitor="metrics/h_mean", save_weights_only=True, mode="max"
     )
 
     module = PlannerModule(neural_astar, config)

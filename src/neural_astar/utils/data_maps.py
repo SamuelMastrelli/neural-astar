@@ -117,7 +117,7 @@ class Map_dataset(data.Dataset):
             i+=1
         return result
     
-
+    '''
     def resize_tensor(self, tensor, new_shape: tuple):
         """
         Ridimensiona un tensore a nuove dimensioni, aggiungendo padding di zeri se necessario
@@ -150,3 +150,4 @@ class Map_dataset(data.Dataset):
                 max(0, offset_col):max(0, offset_col) + (end_col - start_col)] = tensor[start_row:end_row, start_col:end_col]
         
         return new_tensor
+    '''
