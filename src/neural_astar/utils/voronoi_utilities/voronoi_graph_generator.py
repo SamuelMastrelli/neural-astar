@@ -277,7 +277,7 @@ class VoronoiGraphGenerator:
             
 
             for neighbor in current.get_connected_nodes():
-                tentative_g_score = g_score[current] + self.dist_between(current, neighbor)
+                tentative_g_score = g_score[current] + 1
                 if tentative_g_score < g_score[neighbor]:
                     came_from[neighbor] = current
                     g_score[neighbor] = tentative_g_score
