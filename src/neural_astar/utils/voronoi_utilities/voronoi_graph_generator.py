@@ -230,6 +230,10 @@ class VoronoiGraphGenerator:
         return self._map
     
     def get_reachable_nodes(self, start_node: Node) -> List[Node]:
+        '''
+        This method returns a list of all reachable nodes starting from
+        start_node
+        '''
         visited = set()
         queue = deque([start_node])
         reachable_nodes = []
@@ -246,6 +250,10 @@ class VoronoiGraphGenerator:
         return reachable_nodes
                     
     def select_reachable_nodes(self) -> Tuple[Node, Node]:
+        '''
+        This method provides a tuple of nodes, start and goal nodes.
+        The start is choosen randomly and the goal ramdomly within the reachable nodes
+        '''
         nodes = list(self._graph.get_nodes().values())
         random_start_node = random.choice(nodes)
         reachable_nodes = self.get_reachable_nodes(random_start_node)
@@ -260,6 +268,10 @@ class VoronoiGraphGenerator:
         return random_start_node, random_end_node
 
     def find_shortest_path(self, start: Node, end: Node) -> List[Node]:
+        '''
+        This methods is able to find the path between start and end(goal),
+        using Dijkstra algorithm and using method dist_between ad heuristic 
+        '''
         graph = self._graph
         open_set = []
         heapq.heappush(open_set, (0.0, start))
@@ -289,6 +301,9 @@ class VoronoiGraphGenerator:
 
 
     def dist_between(self, a: Node, b: Node) -> float:
+        '''
+        As heuristic distance between two nodes, we use the euclidean norm of Numpy
+        '''
         return np.linalg.norm(np.array(a.get_coordinate().get_x_y_tuple()) - np.array(b.get_coordinate().get_x_y_tuple()))
 
     def reconstruct_path(self, came_from: Dict[Node, Node], current: Node) -> List[Node]:
