@@ -22,7 +22,8 @@ dependencies = [
     "matplotlib",
     "tensorboardx",
     "opencv-python",
-    "scikit-image"
+    "scikit-image",
+    "termcolor"
 ]
 version = "0.2.0"
 
