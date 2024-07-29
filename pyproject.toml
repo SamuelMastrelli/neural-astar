@@ -21,6 +21,8 @@ dependencies = [
     "jupyterlab",
     "matplotlib",
     "tensorboardx",
+    "opencv-python",
+    "scikit-image"
 ]
 version = "0.2.0"
 
