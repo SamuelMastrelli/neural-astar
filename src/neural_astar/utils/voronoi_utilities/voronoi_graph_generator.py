@@ -25,8 +25,8 @@ class VoronoiGraphGenerator:
         self._floor = floor
 
         try:
-            self._map = cv2.imread(os.path.join(os.path.dirname(__file__), 'maps_data', 'maps', cluster, env_name + '_floor_' + str(floor) + '.png'))
-            with open(os.path.join(os.path.dirname(__file__), 'maps_data', 'maps_metadata', env_name + '_floor_' + str(floor)) + '.yaml', mode='r') as f:
+            self._map = cv2.imread(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'maps_data', 'maps', cluster, env_name + '_floor_' + str(floor) + '.png'))
+            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'maps_data', 'maps_metadata', env_name + '_floor_' + str(floor)) + '.yaml', mode='r') as f:
                 map_metadata: Dict = yaml.load(f, Loader=yaml.FullLoader)
             self._scale = map_metadata['scale']
             self._map_origin = Coordinate(x=map_metadata['origin']['x'], y=map_metadata['origin']['y'],
@@ -212,7 +212,7 @@ class VoronoiGraphGenerator:
         if save_to_file:
             # Save voronoi bitmap
             cv2.imwrite(os.path.join(
-                os.path.dirname(__file__), 'maps_data', 'voronoi_bitmaps',
+                os.path.dirname(os.path.realpath(__file__)), 'maps_data', 'voronoi_bitmaps',
                 self._env_name + '_floor_' + str(self._floor) + '.png'),
                 self._voronoi_bitmap)
 
@@ -220,7 +220,7 @@ class VoronoiGraphGenerator:
             map_voronoi_bitmap = self._map.copy()
             map_voronoi_bitmap[self._voronoi_bitmap == 0] = 0
             cv2.imwrite(os.path.join(
-                os.path.dirname(__file__), 'maps_data', 'maps_with_voronoi_bitmaps',
+                os.path.dirname(os.path.realpath(__file__)), 'maps_data', 'maps_with_voronoi_bitmaps',
                 self._env_name + '_floor_' +  str(self._floor) + '.png'),
                 map_voronoi_bitmap)
 
