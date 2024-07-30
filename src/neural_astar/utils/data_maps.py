@@ -81,8 +81,8 @@ class Map_dataset(data.Dataset):
 
 
         map_design = torch.clamp(image_tensor.mean(0), 0, 1)
-        map_design[map_design<0.8] = 0
-        map_design[map_design>=0.8] = 1
+        map_design[map_design<0.8] = 1
+        map_design[map_design>=0.8] = 0
        
         #Grafo di voronoi
         split = image.split('_floor_')
