@@ -71,7 +71,7 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
         self.log("metrics/val_loss", loss)
 
         # For shortest path problems:
-        if map_designs.shape[1] == 1:
+        if map_designs.shape[1] == 1 and map_designs.shape[2] < 100:
             va_outputs = self.vanilla_astar(map_designs, start_maps, goal_maps)
             pathlen_astar = va_outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
             pathlen_model = outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
