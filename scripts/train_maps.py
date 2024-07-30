@@ -27,6 +27,13 @@ def main(config):
     m, s, g, t = next(iter(train_loader))
     print(m.shape, s.shape, g.shape, t.shape)
 
+    print(m)
+    print(s)
+    print(g)
+    print(t)
+
+
+    sys.exit()
   
 
     neural_astar = NeuralAstar(
