@@ -9,6 +9,7 @@ import torchvision.transforms as transforms
 import os
 from neural_astar.utils.voronoi_utilities.voronoi_graph_generator import VoronoiGraphGenerator
 from neural_astar.utils.voronoi_utilities.Graph.voronoi_graph import Coordinate, Node, Graph
+import cv2
 
 def create_dataloader(
         dir: str,
@@ -62,7 +63,6 @@ class Map_dataset(data.Dataset):
     def _process(self, image: str):
         #Da immagine a tensore
 
-        img = Image.open(self.dir + "/" + self.cluster + "/" + image)
 
         #gray_image = img.convert("L")
 
@@ -72,6 +72,31 @@ class Map_dataset(data.Dataset):
 
         # Converti l'immagine binaria in un array numpy
         #map_design = torch.from_numpy(np.array(binary_image, dtype=np.uint8))
+        img = cv2.imread(self.dir + "/" + self.cluster + "/" + image)
+
+        # Converti l'immagine in scala di grigi
+        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Creare una maschera binaria delle aree bianche
+        _, binary_mask = cv2.threshold(gray_image, 240, 255, cv2.THRESH_BINARY)
+
+        # Invertire la maschera
+        binary_mask_inv = cv2.bitwise_not(binary_mask)
+
+        # Trova i contorni dell'edificio
+        contours, _ = cv2.findContours(binary_mask_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Creare una maschera di riempimento
+        fill_mask = np.zeros_like(gray_image)
+
+        # Riempire solo le aree esterne all'edificio
+        cv2.drawContours(fill_mask, contours, -1, (255), thickness=cv2.FILLED)
+
+        # Invertire la maschera di riempimento
+        fill_mask_inv = cv2.bitwise_not(fill_mask)
+
+        # Applicare la maschera per cambiare le aree esterne bianche in nero
+        img[fill_mask_inv == 255] = [0, 0, 0]
 
         transform = transforms.Compose([
                     transforms.ToTensor()

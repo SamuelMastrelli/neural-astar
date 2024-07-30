@@ -31,6 +31,7 @@ def main(config):
     im, s, g, t = next(iter(train_loader))
     print(s)
 
+    
 
     neural_astar = NeuralAstar(
         encoder_input=config.encoder.input,
