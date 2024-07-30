@@ -123,6 +123,8 @@ def backtrack(
     loc = (parents * goal_maps.view(num_samples, -1)).sum(-1)
     for _ in range(current_t):
         path_maps.view(num_samples, -1)[range(num_samples), loc] = 1
+        print(loc)
+        print(parents.shape)
         loc = parents[range(num_samples), loc]
     return path_maps
 
