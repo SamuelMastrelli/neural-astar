@@ -33,7 +33,6 @@ def main(config):
     print(t)
 
 
-    sys.exit()
   
 
     neural_astar = NeuralAstar(
