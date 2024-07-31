@@ -115,8 +115,7 @@ def backtrack(
     """
 
     num_samples = start_maps.shape[0]
-    parents = parents.type(torch.float64)
-    parents = parents.type(torch.long)
+    parents =  parents.float64().long()
     goal_maps = goal_maps.type(torch.long)
     start_maps = start_maps.type(torch.long)
     path_maps = goal_maps.type(torch.long)
