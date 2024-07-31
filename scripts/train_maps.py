@@ -16,7 +16,7 @@ from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint
 import sys
 import os
-sys.setrecursionlimit(10000)
+
 
 @hydra.main(config_path="config", config_name="train_maps")
 def main(config):
