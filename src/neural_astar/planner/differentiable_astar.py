@@ -213,6 +213,7 @@ class DifferentiableAstar(nn.Module):
             f_exp = torch.exp(-1 * f / math.sqrt(cost_maps.shape[-1])) #attivazione di hubara, con temperatura come radice della dimensione -1 dei costi [width]
             f_exp = f_exp * open_maps #Scherma con i nodi aperti
             selected_node_maps = _st_softmax_noexp(f_exp) #Selezione nodo migliore
+            print("Selected node maps", selected_node_maps)
             if store_intermediate_results:
                 intermediate_results.append(
                     {
