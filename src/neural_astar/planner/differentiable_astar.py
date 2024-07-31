@@ -74,7 +74,7 @@ def _st_softmax_noexp(val: torch.tensor) -> torch.tensor: #Softmax per trovare i
     y_hard[range(len(y_hard)), ind] = 1
     y_hard = y_hard.reshape_as(val)
     y = y.reshape_as(val)
-    return (y_hard - y).detach() + y
+    return torch.clamp((y_hard - y).detach() + y, min=0, max=1)
 
 
 def expand(x: torch.tensor, neighbor_filter: torch.tensor) -> torch.tensor: #Nodi vicini a x, Neighbo filter : [[111], [101], [111]]
