@@ -246,7 +246,7 @@ class DifferentiableAstar(nn.Module):
             # update open maps
             open_maps = torch.clamp(open_maps + idx, 0, 1)
             open_maps = open_maps.detach()
-
+ 
             # for backtracking
             idx = idx.reshape(num_samples, -1)
             snm = selected_node_maps.reshape(num_samples, -1)

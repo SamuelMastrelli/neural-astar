@@ -102,7 +102,7 @@ class Map_dataset(data.Dataset):
                     transforms.ToTensor()
                 ])
 
-        image_tensor = transform(img)
+        image_tensor = transform(img) 
 
 
         map_design = torch.clamp(image_tensor.mean(0), 0, 1)
