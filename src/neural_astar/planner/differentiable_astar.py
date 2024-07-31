@@ -201,6 +201,7 @@ class DifferentiableAstar(nn.Module):
             torch.ones_like(start_maps).reshape(num_samples, -1)
             * goal_maps.reshape(num_samples, -1).max(-1, keepdim=True)[-1] #vettori dei goal, poi gli indici di essi
         )
+        print("parent1: ", parents)
 
         size = cost_maps.shape[-1]
         Tmax = self.Tmax if self.training else 1.0
@@ -251,7 +252,10 @@ class DifferentiableAstar(nn.Module):
             idx = idx.reshape(num_samples, -1)
             snm = selected_node_maps.reshape(num_samples, -1)
             new_parents = snm.max(-1, keepdim=True)[1]
+            print("idx: ", idx)
+            print("newparents: ", new_parents)
             parents = new_parents * idx + parents * (1 - idx)
+            print("parent2: ", parents)
 
             if torch.all(is_unsolved.flatten() == 0):
                 break
