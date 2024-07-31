@@ -323,8 +323,8 @@ class VoronoiGraphGenerator:
         return path_bitmap
     
     def to_numpy_array(self, st: List[Node]) -> np.array:
-        array = np.full(self._map.shape, 0.0)
+        array = np.full(self._map.shape, 0, dtype=int)
         for node in st:
             x,y = node.get_coordinate().get_x_y_tuple()
-            array[x, y] = 1.0
+            array[x, y] = 1
         return array
