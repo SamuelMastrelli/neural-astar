@@ -184,7 +184,7 @@ class DifferentiableAstar(nn.Module):
         goal_maps = goal_maps[:, 0]
         obstacles_maps = obstacles_maps[:, 0]
 
-        plt.imshow(cost_maps)
+        print("cost ", cost_maps)
 
         num_samples = start_maps.shape[0]
         neighbor_filter = self.neighbor_filter
