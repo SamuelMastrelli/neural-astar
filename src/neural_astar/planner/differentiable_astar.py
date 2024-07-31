@@ -68,13 +68,22 @@ def _st_softmax_noexp(val: torch.tensor) -> torch.tensor: #Softmax per trovare i
     """
 
     val_ = val.reshape(val.shape[0], -1)
+    print("val_, ", val_)
     y = val_ / (val_.sum(dim=-1, keepdim=True))
     _, ind = y.max(dim=-1)
+    print("y, ",  y, " ind ", ind)
     y_hard = torch.zeros_like(y)
+    print("y_hard, ", y_hard)
     y_hard[range(len(y_hard)), ind] = 1
+    print("y_hard, ", y_hard)
+
     y_hard = y_hard.reshape_as(val)
+    print("y_hard, ", y_hard)
+
     y = y.reshape_as(val)
-    return torch.clamp((y_hard - y).detach() + y, min=0, max=1)
+    print("y2, ", y)
+
+    return (y_hard - y).detach() + y
 
 
 def expand(x: torch.tensor, neighbor_filter: torch.tensor) -> torch.tensor: #Nodi vicini a x, Neighbo filter : [[111], [101], [111]]
