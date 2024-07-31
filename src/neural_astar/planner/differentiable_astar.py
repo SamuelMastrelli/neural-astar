@@ -11,6 +11,7 @@ from typing import List, NamedTuple, Optional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import matplotlib.pyplot as plt
 
 
 class AstarOutput(NamedTuple):
@@ -182,6 +183,8 @@ class DifferentiableAstar(nn.Module):
         start_maps = start_maps[:, 0]
         goal_maps = goal_maps[:, 0]
         obstacles_maps = obstacles_maps[:, 0]
+
+        plt.imshow(cost_maps)
 
         num_samples = start_maps.shape[0]
         neighbor_filter = self.neighbor_filter
