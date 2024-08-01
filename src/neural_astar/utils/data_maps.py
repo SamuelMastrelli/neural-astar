@@ -52,7 +52,7 @@ class Map_dataset(data.Dataset):
             goals.append(goal)
             opt_trajs.append(opt_traj)
         
-        self.maps_design = self.toTensor(tlist=maps_design).unsqueeze(1)
+        self.maps_design = self.toTensor(tlist=maps_design).unsqueeze(1).permute(0, 1, 3, 2)
         self.starts = self.toTensor(tlist=starts).unsqueeze(1)
         self.goals = self.toTensor(tlist=goals).unsqueeze(1)
         self.opt_trajs = self.toTensor(tlist=opt_trajs).unsqueeze(1)
