@@ -48,8 +48,8 @@ def test_start_goal_shortest_path():
     path_bitmap = voronoi_graph_generator.draw_path_on_bitmap(sh)
     path_bitmap1 = voronoi_graph_generator.draw_path_on_bitmap(hs)
 
-    cv2.imwrite('C:/Users/User/Desktop/uni/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap.png', path_bitmap)
-    cv2.imwrite('C:/Users/User/Desktop/uni/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap1.png', path_bitmap1)
+    cv2.imwrite('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap.png', path_bitmap)
+    cv2.imwrite('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_bitmap/path_bitmap1.png', path_bitmap1)
 
     hs.reverse()
 

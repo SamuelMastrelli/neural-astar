@@ -68,20 +68,18 @@ def _st_softmax_noexp(val: torch.tensor) -> torch.tensor: #Softmax per trovare i
     """
 
     val_ = val.reshape(val.shape[0], -1)
-    print("val_, ", val_)
-    y = val_ / (val_.sum(dim=-1, keepdim=True))
+
+    y = val_ / (val_.sum(dim=-1, keepdim=True) + 0.001)
+ 
     _, ind = y.max(dim=-1)
-    print("y, ",  y, " ind ", ind)
     y_hard = torch.zeros_like(y)
-    print("y_hard, ", y_hard)
     y_hard[range(len(y_hard)), ind] = 1
-    print("y_hard, ", y_hard)
 
     y_hard = y_hard.reshape_as(val)
-    print("y_hard, ", y_hard)
+
 
     y = y.reshape_as(val)
-    print("y2, ", y)
+
 
     return (y_hard - y).detach() + y
 
@@ -131,8 +129,8 @@ def backtrack(
     path_maps = goal_maps.type(torch.long)
     num_samples = len(parents)  ##Why?
     loc = (parents * goal_maps.view(num_samples, -1)).sum(-1)
-    print(loc)
-    print(parents.shape)
+
+
     for _ in range(current_t):
         path_maps.view(num_samples, -1)[range(num_samples), loc] = 1
         loc = parents[range(num_samples), loc]
@@ -193,7 +191,6 @@ class DifferentiableAstar(nn.Module):
         goal_maps = goal_maps[:, 0]
         obstacles_maps = obstacles_maps[:, 0]
 
-        print("cost ", cost_maps)
 
         num_samples = start_maps.shape[0]
         neighbor_filter = self.neighbor_filter
@@ -213,7 +210,7 @@ class DifferentiableAstar(nn.Module):
             torch.ones_like(start_maps).reshape(num_samples, -1)
             * goal_maps.reshape(num_samples, -1).max(-1, keepdim=True)[-1] #vettori dei goal, poi gli indici di essi
         )
-        print("parent1: ", parents)
+ 
 
         size = cost_maps.shape[-1]
         Tmax = self.Tmax if self.training else 1.0
@@ -223,10 +220,10 @@ class DifferentiableAstar(nn.Module):
             # select the node that minimizes cost
             f = self.g_ratio * g + (1 - self.g_ratio) * h #f di a start con ratio tra g e h
             f_exp = torch.exp(-1 * f / math.sqrt(cost_maps.shape[-1])) #attivazione di hubara, con temperatura come radice della dimensione -1 dei costi [width]
-            print("f_exp ", f_exp)
+
             f_exp = f_exp * open_maps #Scherma con i nodi aperti
             selected_node_maps = _st_softmax_noexp(f_exp) #Selezione nodo migliore
-            print("Selected node maps", selected_node_maps)
+
             if store_intermediate_results:
                 intermediate_results.append(
                     {
@@ -266,10 +263,9 @@ class DifferentiableAstar(nn.Module):
             idx = idx.reshape(num_samples, -1)
             snm = selected_node_maps.reshape(num_samples, -1)
             new_parents = snm.max(-1, keepdim=True)[1]
-            print("idx: ", idx)
-            print("newparents: ", new_parents)
+    
             parents = new_parents * idx + parents * (1 - idx)
-            print("parent2: ", parents)
+
 
             if torch.all(is_unsolved.flatten() == 0):
                 break

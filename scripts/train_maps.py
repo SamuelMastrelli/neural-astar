@@ -28,11 +28,6 @@ def main(config):
     m, s, g, t = next(iter(train_loader))
     print(m.shape, s.shape, g.shape, t.shape)
 
-    print(m)
-    print(s)
-    print(g)
-    print(t)
-
 
   
 
@@ -48,7 +43,7 @@ def main(config):
 
 
     checkpoint_callbacks = ModelCheckpoint(
-        monitor="metrics/h_mean", save_weights_only=False, mode="max"
+        monitor="metrics/val_loss", save_weights_only=False, mode="max"
     )
 
     module = PlannerModule(neural_astar, config)
