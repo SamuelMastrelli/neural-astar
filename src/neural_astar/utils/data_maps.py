@@ -36,6 +36,7 @@ class Map_dataset(data.Dataset):
         starts = []
         goals = []
         opt_trajs = []
+        histories = []
 
         for image in os.listdir(dirname + "/" + cluster):
             (
@@ -51,8 +52,9 @@ class Map_dataset(data.Dataset):
             starts.append(start)
             goals.append(goal)
             opt_trajs.append(opt_traj)
+
         
-        self.maps_design = self.toTensor(tlist=maps_design).unsqueeze(1).permute(0, 1, 3, 2)
+        self.maps_design = self.toTensor(tlist=maps_design).unsqueeze(1)
         self.starts = self.toTensor(tlist=starts).unsqueeze(1)
         self.goals = self.toTensor(tlist=goals).unsqueeze(1)
         self.opt_trajs = self.toTensor(tlist=opt_trajs).unsqueeze(1)
@@ -63,15 +65,6 @@ class Map_dataset(data.Dataset):
     def _process(self, image: str):
         #Da immagine a tensore
 
-
-        #gray_image = img.convert("L")
-
-        # Applica una soglia per ottenere un'immagine binaria
-        #threshold = 128
-        #binary_image = gray_image.point(lambda p: p > threshold and 1)
-
-        # Converti l'immagine binaria in un array numpy
-        #map_design = torch.from_numpy(np.array(binary_image, dtype=np.uint8))
         img = cv2.imread(self.dir + "/" + self.cluster + "/" + image)
 
         # Converti l'immagine in scala di grigi
@@ -106,8 +99,8 @@ class Map_dataset(data.Dataset):
 
 
         map_design = torch.clamp(image_tensor.mean(0), 0, 1)
-        map_design[map_design<1] = 0
-        map_design[map_design>=1] = 1
+        map_design[map_design<0.9] = 0
+        map_design[map_design>=0.9] = 1
        
         #Grafo di voronoi
         split = image.split('_floor_')
@@ -125,10 +118,11 @@ class Map_dataset(data.Dataset):
         start_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([start]))
         goal_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal]))
         #path ottimo
-        path = voronoi_graph_generator.to_numpy_array(voronoi_graph_generator.find_shortest_path(start, goal))
+        path, histories = voronoi_graph_generator.find_shortest_path(start, goal)
+        path = voronoi_graph_generator.to_numpy_array(path)
         opt_traj = torch.from_numpy(path)
 
-        return map_design, start_map, goal_map, opt_traj
+        return map_design.permute(1,0), start_map, goal_map, opt_traj
 
 
 
@@ -138,6 +132,7 @@ class Map_dataset(data.Dataset):
         start_map = self.starts[index]
         goal_map = self.goals[index]
         opt_traj = self.opt_trajs[index]
+    
 
         return map, start_map, goal_map, opt_traj
 

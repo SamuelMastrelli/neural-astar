@@ -257,6 +257,9 @@ class VoronoiGraphGenerator:
         nodes = list(self._graph.get_nodes().values())
         random_start_node = random.choice(nodes)
         reachable_nodes = self.get_reachable_nodes(random_start_node)
+        while len(reachable_nodes) < 2:
+            random_start_node = random.choice(nodes)
+            reachable_nodes = self.get_reachable_nodes(random_start_node)
 
         if reachable_nodes is None or len(reachable_nodes) < 2:
             raise ValueError("Not enough reachable nodes")
@@ -267,7 +270,7 @@ class VoronoiGraphGenerator:
 
         return random_start_node, random_end_node
 
-    def find_shortest_path(self, start: Node, end: Node) -> List[Node]:
+    def find_shortest_path(self, start: Node, end: Node) -> Tuple[List[Node], np.array] :
         '''
         This methods is able to find the path between start and end(goal),
         using Dijkstra algorithm and using method dist_between ad heuristic 
@@ -280,12 +283,14 @@ class VoronoiGraphGenerator:
         g_score[start] = 0
         f_score = {node: float('inf') for node in graph.get_nodes().values()}
         f_score[start] = self.dist_between(start, end)
+        histories = np.zeros(self._map.shape)
 
         while open_set:
             current = heapq.heappop(open_set)[1]
+            histories += self.to_numpy_array([current])
 
             if current == end:
-                return self.reconstruct_path(came_from, current)
+                return self.reconstruct_path(came_from, current), histories
             
 
             for neighbor in current.get_connected_nodes():
@@ -297,7 +302,7 @@ class VoronoiGraphGenerator:
                     if neighbor not in [i[1] for i in open_set]:
                         heapq.heappush(open_set, (f_score[neighbor], neighbor))
 
-        return []
+        return [], histories
 
 
     def dist_between(self, a: Node, b: Node) -> float:
