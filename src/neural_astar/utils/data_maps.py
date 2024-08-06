@@ -44,6 +44,7 @@ class Map_dataset(data.Dataset):
                 start,
                 goal,
                 opt_traj,
+                history
             ) = self._process(image)
 
             
@@ -52,12 +53,14 @@ class Map_dataset(data.Dataset):
             starts.append(start)
             goals.append(goal)
             opt_trajs.append(opt_traj)
+            histories.append(torch.from_numpy(history))
 
         
         self.maps_design = self.toTensor(tlist=maps_design).unsqueeze(1)
         self.starts = self.toTensor(tlist=starts).unsqueeze(1)
         self.goals = self.toTensor(tlist=goals).unsqueeze(1)
         self.opt_trajs = self.toTensor(tlist=opt_trajs).unsqueeze(1)
+        self.histories = self.toTensor(tlist=histories).unsqueeze(1)
 
         
 
@@ -122,7 +125,7 @@ class Map_dataset(data.Dataset):
         path = voronoi_graph_generator.to_numpy_array(path)
         opt_traj = torch.from_numpy(path)
 
-        return map_design.permute(1,0), start_map, goal_map, opt_traj
+        return map_design.permute(1,0), start_map, goal_map, opt_traj, histories
 
 
 
@@ -132,9 +135,10 @@ class Map_dataset(data.Dataset):
         start_map = self.starts[index]
         goal_map = self.goals[index]
         opt_traj = self.opt_trajs[index]
+        histories = self.histories[index]
     
 
-        return map, start_map, goal_map, opt_traj
+        return map, start_map, goal_map, opt_traj, histories
 
     def __len__(self):
         return self.maps_design.shape[0]

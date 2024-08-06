@@ -1,5 +1,5 @@
 seed: 1234
-dataset: "planning-datasets/data/street/mixed_064_moore_c16"
+dataset: "planning-datasets/data/mpd/mazes_032_moore_c8"
 logdir: "model"
 Tmax: 0.25
 
