@@ -43,12 +43,12 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
     #in 6 sezioni: initialization(init e setup), train loop(training step),
     #validation loop(validation step), test loop(test step), prediction loop(preditcion step),
     #optimizers and LR schedulers(configure optimizer)
-    def __init__(self, planner, config, maps=False):
+    def __init__(self, planner, config):
         super().__init__()
         self.planner = planner
         self.vanilla_astar = VanillaAstar()
         self.config = config
-        self.maps = maps
+      
 
     def forward(self, map_designs, start_maps, goal_maps):
         return self.planner(map_designs, start_maps, goal_maps)
@@ -57,10 +57,8 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
         return torch.optim.RMSprop(self.planner.parameters(), self.config.params.lr)
 
     def training_step(self, train_batch, batch_idx):
-        if(self.maps):
-            map_designs, start_maps, goal_maps, opt_trajs, _ = train_batch
-        else:
-            map_designs, start_maps, goal_maps, opt_trajs = train_batch
+
+        map_designs, start_maps, goal_maps, opt_trajs = train_batch
     
         outputs = self.forward(map_designs, start_maps, goal_maps)
         loss = nn.L1Loss()(outputs.histories, opt_trajs)
@@ -69,10 +67,8 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
         return loss
 
     def validation_step(self, val_batch, batch_idx):
-        if(self.maps):
-            map_designs, start_maps, goal_maps, opt_trajs, histories = val_batch
-        else:
-            map_designs, start_maps, goal_maps, opt_trajs = val_batch
+
+        map_designs, start_maps, goal_maps, opt_trajs = val_batch
         outputs = self.forward(map_designs, start_maps, goal_maps)
         loss = nn.L1Loss()(outputs.histories, opt_trajs)
 
@@ -80,23 +76,17 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
 
         # For shortest path problems:
         if map_designs.shape[1] == 1:
-            if(self.maps):
-                pathlen_astar = opt_trajs.sum((1, 2, 3)).detach().cpu().numpy()
-                pathlen_model = outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
-
-                exp_astar = histories.sum((1, 2, 3)).detach().cpu().numpy()
-                exp_na = outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
-                p_exp = np.maximum((exp_astar - exp_na) / exp_astar, 0.0).mean()
-
-        
-            else:   
-                va_outputs = self.vanilla_astar(map_designs, start_maps, goal_maps)
-                pathlen_astar = va_outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
-                pathlen_model = outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
-                exp_astar = va_outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
-                exp_na = outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
-
+            va_outputs = self.vanilla_astar(map_designs, start_maps, goal_maps)
+            pathlen_astar = va_outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
+            pathlen_model = outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
             p_opt = (pathlen_astar == pathlen_model).mean()
+
+
+            exp_astar = va_outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
+            exp_na = outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
+            p_exp = np.maximum((exp_astar - exp_na) / exp_astar, 0.0).mean()
+
+            
             p_exp = np.maximum((exp_astar - exp_na) / exp_astar, 0.0).mean()
 
             h_mean = 2.0 / (1.0 / (p_opt + 1e-10) + 1.0 / (p_exp + 1e-10))

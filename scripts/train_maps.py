@@ -25,8 +25,8 @@ def main(config):
     train_loader = create_dataloader(dir=config.dataset, cluster="train_resized", batch_size=config.params.batch_size)
     val_loader = create_dataloader(dir=config.dataset, cluster="validation_resized", batch_size=config.params.batch_size)
 
-    m, s, g, t, h = next(iter(train_loader))
-    print(m.shape, s.shape, g.shape, t.shape, h.shape)
+    m, s, g, t= next(iter(train_loader))
+    print(m.shape, s.shape, g.shape, t.shape)
 
 
   
@@ -46,7 +46,7 @@ def main(config):
         monitor="metrics/h_mean", save_weights_only=False, mode="max"
     )
 
-    module = PlannerModule(neural_astar, config, True)
+    module = PlannerModule(neural_astar, config)
     logdir = f"{config.logdir}/{os.path.basename(config.dataset)}"
     trainer = pl.Trainer(
         accelerator= "gpu" if torch.cuda.is_available() else "cpu",
