@@ -10,6 +10,39 @@ import os
 from neural_astar.utils.voronoi_utilities.voronoi_graph_generator import VoronoiGraphGenerator
 from neural_astar.utils.voronoi_utilities.Graph.voronoi_graph import Coordinate, Node, Graph
 import cv2
+from torchvision.utils import make_grid
+
+def visualize_results_voronoi(
+    map_designs: torch.tensor, planner_outputs: torch.tensor, scale: int = 1
+) -> np.ndarray:
+    """
+    Create a visualization of search results
+
+    Args:
+        map_designs (torch.tensor): input maps
+        planner_outputs (torch.tensor): outout from voronoi graph
+        scale (int): scale factor to enlarge output images. Default to 1.
+
+    Returns:
+        np.ndarray: visualized results
+    """
+
+
+  
+    paths = planner_outputs
+    results = make_grid(map_designs).permute(1, 2, 0) #make_grid fa una griglia di immagini, permute scambia le dimensioni
+    p = make_grid(paths).permute(1, 2, 0).float()
+    results[p[..., 0] == 1] = torch.tensor([1.0, 0.0, 0])
+
+    results = ((results.numpy()) * 255.0).astype("uint8")
+
+    if scale > 1:
+        results = Image.fromarray(results).resize(
+            [x * scale for x in results.shape[:2]], resample=Image.NEAREST
+        )
+        results = np.asarray(results)
+
+    return results
 
 def create_dataloader(
         dir: str,
