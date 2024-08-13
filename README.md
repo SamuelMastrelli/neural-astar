@@ -1,4 +1,4 @@
-# Path Planning using Neural A\* Search (ICML 2021)
+# Study and Application of Neural A\* in mobile robot applications
 
 This is the fork of the official repository for the following paper:
 
@@ -14,7 +14,7 @@ Neural A\* is a novel data-driven search-based planner that consists of a traina
 
 
 ## Overview
-- This branch presents minimal working examples for training Neural A* to (1) solve shortest path problems and (2) perform planning directly on [WarCraft map images](https://edmond.mpdl.mpg.de/dataset.xhtml?persistentId=doi:10.17617/3.YJCQ5S).
+- This branch presents minimal working examples for training Neural A* to (1) solve shortest path problems (2) perform planning directly on [WarCraft map images](https://edmond.mpdl.mpg.de/dataset.xhtml?persistentId=doi:10.17617/3.YJCQ5S) and on resized areas mapped by robot provided by [Gibson-Env-Utilities](https://github.com/micheleantonazzi/gibson-env-utilities).
 - For reproducing experiments in our ICML'21 paper, please refer to [icml2021](https://github.com/omron-sinicx/neural-astar/tree/icml2021) branch.
 - For creating datasets used in our experiments, please visit [planning datasets](https://github.com/omron-sinicx/planning-datasets) repository.
 
@@ -70,7 +70,7 @@ Once training has been done, open [`notebooks/example_warcraft.ipnyb`](https://g
 
 ### Data format (c.f. https://github.com/omron-sinicx/neural-astar/issues/1#issuecomment-968063948)
 
-The datafile `mazes_032_moore_c8.npz` was created using our data generation script in a separate repository https://github.com/omron-sinicx/planning-datasets.
+The datafile `mazes_032_moore_c8.npz` was created using data generation script in a separate repository https://github.com/omron-sinicx/planning-datasets.
 
 In the data, `arr_0` - `arr_3` are 800 training, `arr_4` - `arr_7` are 100 validation, and `arr_8` - `arr_11` are 100 test data, which contain the following information (see also https://github.com/omron-sinicx/planning-datasets/blob/68e182801fd8cbc4c25ccdc1b14b8dd99d9bbc73/generate_spp_instances.py#L50-L61):
 
@@ -81,7 +81,7 @@ In the data, `arr_0` - `arr_3` are 800 training, `arr_4` - `arr_7` are 100 valid
 
 For each problem instance, the start location is generated randomly when `__getitem__` is called: https://github.com/omron-sinicx/neural-astar/blob/e6e626c4d159b0e4c58ee6ad33c7e03db33d72f4/neural_astar/utils/data.py#L114
 
-## Third-party implementations
+## Third-party implementations of Neural A\*
 
 - [shreya-bhatt27/NeuralAstar-ported](https://github.com/shreya-bhatt27/NeuralAstar-ported): Pytorch Lightning implementation with some additional experiments. See also [their preprint](https://arxiv.org/abs/2208.04153).
 
@@ -129,8 +129,8 @@ For each problem instance, the start location is generated randomly when `__geti
 ```
 
 ## Acknowledgments
-This repository includes some code from [RLAgent/gated-path-planning-networks](https://github.com/RLAgent/gated-path-planning-networks) [1] with permission of the authors and from [martius-lab/blackbox-backprop](https://github.com/martius-lab/blackbox-backprop) [2].
+This repository includes some code from [RLAgent/gated-path-planning-networks](https://github.com/RLAgent/gated-path-planning-networks) [1] with permission of the authors and from [martius-lab/blackbox-backprop](https://github.com/martius-lab/blackbox-backprop) [2]. It includes also code from [micheleantonazzi/gibson-env-utilities](https://github.com/micheleantonazzi/gibson-env-utilities) used to generate voronoi graph.
 
-## References
+## Official Neural A\* references
 - [1] [Lisa Lee*, Emilio Parisotto*, Devendra Singh Chaplot, Eric Xing, Ruslan Salakhutdinov, "Gated Path Planning Networks", ICML, 2018.](https://arxiv.org/abs/1806.06408)
 - [2] [Marin Vlastelica Pogančić, Anselm Paulus, Vit Musil, Georg Martius, Michal Rolinek, "Differentiation of Blackbox Combinatorial Solvers", ICLR, 2020.](https://arxiv.org/abs/1912.02175)
