@@ -6,7 +6,7 @@ import hydra
 import pytorch_lightning as pl
 import torch
 from neural_astar.planner import NeuralAstar
-from neural_astar.utils.data_sdd import create_sdd_dataloader
+from neural_astar.utils.data_sdd_intrascenes import create_sdd_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint 
 import sys
@@ -32,7 +32,7 @@ def main(config):
 
 
     checkpoint_callback = ModelCheckpoint(
-        monitor="metrics/val_loss", save_weights_only=False, mode="max"
+        monitor="metrics/val_loss", save_weights_only=False, mode="min"
     )
 
     module = PlannerModule(neural_astar, config)

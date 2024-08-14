@@ -31,7 +31,7 @@ def main(config):
     print(im.shape, s.shape, g.shape, t.shape)
 
     checkpoint_callback = ModelCheckpoint(
-        monitor="metrics/val_loss", save_weights_only=True, mode="max"
+        monitor="metrics/val_loss", save_weights_only=True, mode="min"
     )
 
     module = PlannerModule(neural_astar, config)
