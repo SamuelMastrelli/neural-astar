@@ -255,18 +255,22 @@ class VoronoiGraphGenerator:
         The start is choosen randomly and the goal ramdomly within the reachable nodes
         '''
         nodes = list(self._graph.get_nodes().values())
-        random_start_node = random.choice(nodes)
-        reachable_nodes = self.get_reachable_nodes(random_start_node)
-        while len(reachable_nodes) < 2:
+        while(True) :
             random_start_node = random.choice(nodes)
             reachable_nodes = self.get_reachable_nodes(random_start_node)
+            while len(reachable_nodes) < 2:
+                random_start_node = random.choice(nodes)
+                reachable_nodes = self.get_reachable_nodes(random_start_node)
 
-        if reachable_nodes is None or len(reachable_nodes) < 2:
-            raise ValueError("Not enough reachable nodes")
-        
-        random_end_node = random.choice(reachable_nodes)
-        while random_start_node == random_end_node:
+            if reachable_nodes is None or len(reachable_nodes) < 2:
+                raise ValueError("Not enough reachable nodes")
+            
             random_end_node = random.choice(reachable_nodes)
+            while random_start_node == random_end_node:
+                random_end_node = random.choice(reachable_nodes)
+            if(self.dist_between(random_start_node, random_end_node) >= self._map.shape[0]/10):
+                break
+            
 
         return random_start_node, random_end_node
 
