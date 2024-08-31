@@ -25,10 +25,6 @@ def main(config):
     train_loader = create_dataloader(dir=config.dataset, cluster="train_resized", batch_size=config.params.batch_size)
     val_loader = create_dataloader(dir=config.dataset, cluster="validation_resized", batch_size=config.params.batch_size)
 
-    m, s, g, t, _= next(iter(train_loader))
-    print(m.shape, s.shape, g.shape, t.shape)
-
-
   
 
     neural_astar = NeuralAstar(
@@ -43,10 +39,10 @@ def main(config):
 
 
     checkpoint_callbacks = ModelCheckpoint(
-        monitor="metrics/h_mean", save_weights_only=False, mode="max"
+        monitor="metrics/val_loss", save_weights_only=False, mode="min"
     )
 
-    module = PlannerModule(neural_astar, config, True)
+    module = PlannerModule(neural_astar, config)
     logdir = f"{config.logdir}/{os.path.basename(config.dataset)}"
     trainer = pl.Trainer(
         accelerator= "gpu" if torch.cuda.is_available() else "cpu",

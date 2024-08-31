@@ -58,10 +58,8 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
         return torch.optim.RMSprop(self.planner.parameters(), self.config.params.lr)
 
     def training_step(self, train_batch, batch_idx):
-        if(self.maps):
-            map_designs, start_maps, goal_maps, opt_trajs, _ = train_batch
-        else:
-            map_designs, start_maps, goal_maps, opt_trajs = train_batch
+
+        map_designs, start_maps, goal_maps, opt_trajs, _ = train_batch
     
         outputs = self.forward(map_designs, start_maps, goal_maps)
         loss = nn.L1Loss()(outputs.histories, opt_trajs)
@@ -74,7 +72,7 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
         if(self.maps):
             map_designs, start_maps, goal_maps, opt_trajs, histories = val_batch
         else: 
-            map_designs, start_maps, goal_maps, opt_trajs = val_batch
+            map_designs, start_maps, goal_maps, opt_trajs, _ = val_batch
         outputs = self.forward(map_designs, start_maps, goal_maps)
         loss = nn.L1Loss()(outputs.histories, opt_trajs)
 

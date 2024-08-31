@@ -247,7 +247,7 @@ class VoronoiGraphGenerator:
             for neighbor in current_node.get_connected_nodes():
                 if neighbor not in visited:
                     queue.append(neighbor)
-        return reachable_nodes
+        return [node for node in reachable_nodes if (self.dist_between(start_node, node)) >= 10]
                     
     def select_reachable_nodes(self) -> Tuple[Node, Node]:
         '''
@@ -255,22 +255,16 @@ class VoronoiGraphGenerator:
         The start is choosen randomly and the goal ramdomly within the reachable nodes
         '''
         nodes = list(self._graph.get_nodes().values())
-        while(True) :
+       
+        while (True):
             random_start_node = random.choice(nodes)
             reachable_nodes = self.get_reachable_nodes(random_start_node)
-            while len(reachable_nodes) < 2:
-                random_start_node = random.choice(nodes)
-                reachable_nodes = self.get_reachable_nodes(random_start_node)
+            nodes.remove(random_start_node)
+            if(len(reachable_nodes) >= 1): break
 
-            if reachable_nodes is None or len(reachable_nodes) < 2:
-                raise ValueError("Not enough reachable nodes")
-            
-            random_end_node = random.choice(reachable_nodes)
-            while random_start_node == random_end_node:
-                random_end_node = random.choice(reachable_nodes)
-            if(self.dist_between(random_start_node, random_end_node) >= self._map.shape[0]/10):
-                break
-            
+
+        random_end_node = random.choice(reachable_nodes)
+
 
         return random_start_node, random_end_node
 

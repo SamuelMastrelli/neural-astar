@@ -69,7 +69,7 @@ def _st_softmax_noexp(val: torch.tensor) -> torch.tensor: #Softmax per trovare i
 
     val_ = val.reshape(val.shape[0], -1)
 
-    y = val_ / (val_.sum(dim=-1, keepdim=True) + 0.001)
+    y = val_ / (val_.sum(dim=-1, keepdim=True) + 1e-10)
  
     _, ind = y.max(dim=-1)
     y_hard = torch.zeros_like(y)
