@@ -25,8 +25,8 @@ class VoronoiGraphGenerator:
         self._floor = floor
 
         try:
-            self._map = cv2.imread(os.path.join(os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps', cluster, env_name + '_floor_' + str(floor) + '.png'))
-            with open(os.path.join(os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_metadata', env_name + '_floor_' + str(floor)) + '.yaml', mode='r') as f:
+            self._map = cv2.imread(os.path.join(os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps', cluster, env_name + '_floor_' + str(floor) + '.png'))
+            with open(os.path.join(os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_metadata', env_name + '_floor_' + str(floor)) + '.yaml', mode='r') as f:
                 map_metadata: Dict = yaml.load(f, Loader=yaml.FullLoader)
             self._scale = map_metadata['scale']
             self._map_origin = Coordinate(x=map_metadata['origin']['x'], y=map_metadata['origin']['y'],
@@ -212,7 +212,7 @@ class VoronoiGraphGenerator:
         if save_to_file:
             # Save voronoi bitmap
             cv2.imwrite(os.path.join(
-                os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
+                os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
                 self._env_name + '_floor_' + str(self._floor) + '.png'),
                 self._voronoi_bitmap)
 
@@ -220,7 +220,7 @@ class VoronoiGraphGenerator:
             map_voronoi_bitmap = self._map.copy()
             map_voronoi_bitmap[self._voronoi_bitmap == 0] = 0
             cv2.imwrite(os.path.join(
-                os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_with_voronoi_bitmaps',
+                os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_with_voronoi_bitmaps',
                 self._env_name + '_floor_' +  str(self._floor) + '.png'),
                 map_voronoi_bitmap)
 
@@ -271,7 +271,7 @@ class VoronoiGraphGenerator:
     def find_shortest_path(self, start: Node, end: Node) -> Tuple[List[Node], np.array] :
         '''
         This methods is able to find the path between start and end(goal),
-        using Dijkstra algorithm and using method dist_between ad heuristic 
+        using A * algorithm and using method dist_between ad heuristic 
         '''
         graph = self._graph
         open_set = []
@@ -331,3 +331,7 @@ class VoronoiGraphGenerator:
             x,y = node.get_coordinate().get_x_y_tuple()
             array[x, y] = 1
         return array
+    
+    def reduce(self, new_w: int, new_h:int) :
+        bitmap = self._graph.reduce(new_w, new_h)
+        self._generate_voronoi_graph(bitmap)

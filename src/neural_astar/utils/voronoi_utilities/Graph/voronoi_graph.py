@@ -292,3 +292,22 @@ class Graph:
             find_positions(starting_node, interval, interval)
 
         return positions
+    
+    def reduce(self, new_w: int, new_h: int):
+        scale_x = new_w / self._image_width 
+        scale_y = new_h / self._image_height
+
+        bitmap = np.full((new_w, new_h), 0, dtype=int)
+        for node in self.get_nodes().values() :
+            x, y = node.get_coordinate().get_x_y_tuple()
+            new_x = round(x * scale_x)
+            new_y = round(y * scale_y)
+            bitmap[new_x, new_y] = 1
+
+        return bitmap
+
+
+
+         
+
+    
