@@ -334,4 +334,4 @@ class VoronoiGraphGenerator:
     
     def reduce(self, new_w: int, new_h:int) :
         bitmap = self._graph.reduce(new_w, new_h)
-        self._generate_voronoi_graph(bitmap)
+        self._graph = self._generate_voronoi_graph(bitmap)

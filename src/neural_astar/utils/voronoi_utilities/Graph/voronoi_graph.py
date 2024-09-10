@@ -1,6 +1,11 @@
 import sys
 from typing import Union, Tuple, List, Dict, Set
 import numpy as np
+from skimage.morphology import skeletonize
+from skimage.util import invert
+import torchvision.transforms as transforms
+import torch
+import cv2
 
 
 sys.setrecursionlimit(10000)
@@ -294,17 +299,23 @@ class Graph:
         return positions
     
     def reduce(self, new_w: int, new_h: int):
-        scale_x = new_w / self._image_width 
-        scale_y = new_h / self._image_height
+        transform = transforms.Compose([
+                        transforms.ToTensor()
+                    ])
+        current_bitmap = torch.from_numpy(self.get_graph_bitmap().astype(np.uint8)).unsqueeze(0)
 
-        bitmap = np.full((new_w, new_h), 0, dtype=int)
-        for node in self.get_nodes().values() :
-            x, y = node.get_coordinate().get_x_y_tuple()
-            new_x = round(x * scale_x)
-            new_y = round(y * scale_y)
-            bitmap[new_x, new_y] = 1
+        resize = transforms.Resize((new_w, new_h))
 
-        return bitmap
+        image = transforms.ToPILImage()(current_bitmap)
+        resized_bitmap = resize(image)
+        resized_bitmap_tensor = transform(resized_bitmap)
+
+        return_bitmap = invert(resized_bitmap_tensor.squeeze(0).numpy())
+        return_bitmap = skeletonize(return_bitmap)
+
+        print(return_bitmap.shape)
+
+        return cv2.bitwise_not((return_bitmap*255).astype(np.uint8))
 
 
 
