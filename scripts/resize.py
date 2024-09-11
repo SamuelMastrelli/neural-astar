@@ -5,10 +5,10 @@ import torchvision.transforms as transforms
 import os
 import torch
 
-for cluster in os.listdir('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps'):
+for cluster in os.listdir('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps'):
     if not cluster.endswith('_resized'):
-        for img in os.listdir('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster):
-            image = Image.open('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'/'+img)
+        for img in os.listdir('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster):
+            image = Image.open('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'/'+img)
 
             tr = transforms.Resize(200)
             res = tr(image)
@@ -23,4 +23,4 @@ for cluster in os.listdir('/home/mastrelli/neural-astar/src/neural_astar/utils/v
             image_tensor[image_tensor<0.9] = 0
             image_tensor[image_tensor>=0.9] = 1
 
-            transforms.ToPILImage()(image_tensor).save('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+img)
+            transforms.ToPILImage()(image_tensor).save('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+img)

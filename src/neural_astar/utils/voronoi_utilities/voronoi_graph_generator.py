@@ -168,7 +168,7 @@ class VoronoiGraphGenerator:
                 subdiv.insert(point)
 
         # 8) Draw voronoi facets contours and create the voronoi bitmap
-        eroded_filled_map = cv2.erode(filled_image, kernel=np.ones((3, 3), dtype=int), iterations=1)
+        eroded_filled_map = cv2.erode(filled_image, kernel=np.ones((1, 1), dtype=int), iterations=1)
         # cv2.imshow('eroded filled', eroded_filled_map)
         # cv2.waitKey()
         voronoi_bitmap = np.array([255 for _ in range(image_width * image_height)], dtype=np.uint8).reshape(
@@ -207,6 +207,7 @@ class VoronoiGraphGenerator:
         # cv2.imshow('skeletonized voronoi bitmap', skeletonized_voronoi_bitmap)
         # cv2.waitKey()
         self._graph = self._generate_voronoi_graph(skeletonized_voronoi_bitmap)
+        self._graph.prune_side_lines()
         self._voronoi_bitmap = self._graph.get_graph_bitmap()
 
         if save_to_file:
