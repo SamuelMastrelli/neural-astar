@@ -207,7 +207,7 @@ class VoronoiGraphGenerator:
         # cv2.imshow('skeletonized voronoi bitmap', skeletonized_voronoi_bitmap)
         # cv2.waitKey()
         self._graph = self._generate_voronoi_graph(skeletonized_voronoi_bitmap)
-        self._graph.prune_side_lines()
+        #self._graph.prune_side_lines()
         self._voronoi_bitmap = self._graph.get_graph_bitmap()
 
         if save_to_file:
@@ -333,6 +333,6 @@ class VoronoiGraphGenerator:
             array[x, y] = 1
         return array
     
-    def reduce(self, new_w: int, new_h:int) :
-        bitmap = self._graph.reduce(new_w, new_h)
-        self._graph = self._generate_voronoi_graph(bitmap)
+    # def reduce(self, new_w: int, new_h:int) :
+    #     bitmap = self._graph.reduce(new_w, new_h)
+    #     self._graph = self._generate_voronoi_graph(bitmap)

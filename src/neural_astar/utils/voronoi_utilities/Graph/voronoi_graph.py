@@ -298,24 +298,24 @@ class Graph:
 
         return positions
     
-    def reduce(self, new_w: int, new_h: int):
-        transform = transforms.Compose([
-                        transforms.ToTensor()
-                    ])
-        current_bitmap = torch.from_numpy(self.get_graph_bitmap().astype(np.uint8)).unsqueeze(0)
+    # def reduce(self, new_w: int, new_h: int):
+    #     transform = transforms.Compose([
+    #                     transforms.ToTensor()
+    #                 ])
+    #     current_bitmap = torch.from_numpy(self.get_graph_bitmap().astype(np.uint8)).unsqueeze(0)
 
-        resize = transforms.Resize((new_w, new_h))
+    #     resize = transforms.Resize((new_w, new_h))
 
-        image = transforms.ToPILImage()(current_bitmap)
-        resized_bitmap = resize(image)
-        resized_bitmap_tensor = transform(resized_bitmap)
+    #     image = transforms.ToPILImage()(current_bitmap)
+    #     resized_bitmap = resize(image)
+    #     resized_bitmap_tensor = transform(resized_bitmap)
 
-        return_bitmap = invert(resized_bitmap_tensor.squeeze(0).numpy())
-        return_bitmap = skeletonize(return_bitmap)
+    #     return_bitmap = invert(resized_bitmap_tensor.squeeze(0).numpy())
+    #     return_bitmap = skeletonize(return_bitmap)
 
-        print(return_bitmap.shape)
+    #     print(return_bitmap.shape)
 
-        return cv2.bitwise_not((return_bitmap*255).astype(np.uint8))
+    #     return cv2.bitwise_not((return_bitmap*255).astype(np.uint8))
 
 
 

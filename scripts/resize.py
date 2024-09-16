@@ -10,7 +10,7 @@ for cluster in os.listdir('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/
         for img in os.listdir('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster):
             image = Image.open('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'/'+img)
 
-            tr = transforms.Resize(200)
+            tr = transforms.Resize(300)
             res = tr(image)
 
             transform = transforms.Compose([
