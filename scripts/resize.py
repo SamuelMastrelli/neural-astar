@@ -5,22 +5,25 @@ import torchvision.transforms as transforms
 import os
 import torch
 
-for cluster in os.listdir('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps'):
-    if not cluster.endswith('_resized'):
-        for img in os.listdir('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster):
-            image = Image.open('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'/'+img)
+for cluster in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/maps'):
+    if not cluster.endswith('_resized') and cluster != "DiscardedImages":
+        for img in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster):
+            image = Image.open('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'/'+img)
 
-            tr = transforms.Resize(300)
-            res = tr(image)
+            if image.size[0] >= 700 and image.size[1] >= 700:
+                tr = transforms.Resize(700)
+                res = tr(image)
 
-            transform = transforms.Compose([
-                        transforms.ToTensor()
-                    ])
+                transform = transforms.Compose([
+                            transforms.ToTensor()
+                        ])
 
-            image_tensor = transform(res) 
+                image_tensor = transform(res) 
 
-            image_tensor = torch.clamp(image_tensor.mean(0), 0, 1)
-            image_tensor[image_tensor<0.9] = 0
-            image_tensor[image_tensor>=0.9] = 1
+                image_tensor = torch.clamp(image_tensor.mean(0), 0, 1)
+                image_tensor[image_tensor<0.9] = 0
+                image_tensor[image_tensor>=0.9] = 1
 
-            transforms.ToPILImage()(image_tensor).save('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+img)
+                transforms.ToPILImage()(image_tensor).save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+img)
+            else:
+                image.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/DiscardedImages/' + img )

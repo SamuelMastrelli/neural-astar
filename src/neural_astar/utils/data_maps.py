@@ -86,15 +86,15 @@ class Map_dataset(data.Dataset):
             starts.append(start)
             goals.append(goal)
             opt_trajs.append(opt_traj)
-            histories.append(torch.from_numpy(historie))
+            histories.append(historie)
          
 
         
-        self.maps_design = self.toTensor(tlist=maps_design).unsqueeze(1)
-        self.starts = self.toTensor(tlist=starts).unsqueeze(1)
-        self.goals = self.toTensor(tlist=goals).unsqueeze(1)
-        self.opt_trajs = self.toTensor(tlist=opt_trajs).unsqueeze(1)
-        self.histories = self.toTensor(tlist=histories).unsqueeze(1)
+        self.maps_design = self.toTensor(tlist=maps_design).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
+        self.starts = self.toTensor(tlist=starts).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
+        self.goals = self.toTensor(tlist=goals).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
+        self.opt_trajs = self.toTensor(tlist=opt_trajs).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
+        self.histories = self.toTensor(tlist=histories).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
 
         
 
@@ -150,16 +150,23 @@ class Map_dataset(data.Dataset):
         voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
         graph = voronoi_graph_generator.get_voronoi_graph()
         
-        #Scelta goal e start
-        start, goal = voronoi_graph_generator.select_reachable_nodes()
-        start_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([start]))
-        goal_map = torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal]))
-        #path ottimo
-        path, histories = voronoi_graph_generator.find_shortest_path(start, goal)
-        path = voronoi_graph_generator.to_numpy_array(path)
-        opt_traj = torch.from_numpy(path)
+        starts: list[torch.Tensor] = []
+        goals: list[torch.Tensor] = []
+        opt_trajs: list[torch.Tensor] = []
+        histories_list: list[torch.Tensor] = []
 
-        return map_design.permute(1,0), start_map, goal_map, opt_traj, histories
+        #Scelta goal e start
+        start_goal_list = voronoi_graph_generator.select_reachable_nodes()
+        for (start, goal) in start_goal_list:
+            starts.append(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])))
+            goals.append(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])))
+            #path ottimo
+            path, histories = voronoi_graph_generator.find_shortest_path(start, goal)
+            path = voronoi_graph_generator.to_numpy_array(path)
+            histories_list.append(torch.from_numpy(histories))
+            opt_trajs.append(torch.from_numpy(path))
+
+        return map_design.permute(1,0)[len(starts), :, :, :], self.toTensor(starts), self.toTensor(goals), self.toTensor(opt_trajs), self.toTensor(opt_trajs)
 
 
 

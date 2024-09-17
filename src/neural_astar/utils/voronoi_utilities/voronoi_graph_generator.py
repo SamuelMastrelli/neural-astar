@@ -168,7 +168,7 @@ class VoronoiGraphGenerator:
                 subdiv.insert(point)
 
         # 8) Draw voronoi facets contours and create the voronoi bitmap
-        eroded_filled_map = cv2.erode(filled_image, kernel=np.ones((1, 1), dtype=int), iterations=1)
+        eroded_filled_map = cv2.erode(filled_image, kernel=np.ones((3, 3), dtype=int), iterations=1)
         # cv2.imshow('eroded filled', eroded_filled_map)
         # cv2.waitKey()
         voronoi_bitmap = np.array([255 for _ in range(image_width * image_height)], dtype=np.uint8).reshape(
@@ -250,24 +250,31 @@ class VoronoiGraphGenerator:
                     queue.append(neighbor)
         return [node for node in reachable_nodes if (self.dist_between(start_node, node)) >= 10]
                     
-    def select_reachable_nodes(self) -> Tuple[Node, Node]:
+    def select_reachable_nodes(self) -> List[Tuple[Node, Node]]:
         '''
         This method provides a tuple of nodes, start and goal nodes.
         The start is choosen randomly and the goal ramdomly within the reachable nodes
         '''
         nodes = list(self._graph.get_nodes().values())
+        lenght = len(self._graph.get_nodes())
+        couples = 10
+
+        result: List[Tuple[Node, Node]] = []
        
-        while (True):
+        while (couples > 0):
             random_start_node = random.choice(nodes)
             reachable_nodes = self.get_reachable_nodes(random_start_node)
-            nodes.remove(random_start_node)
-            if(len(reachable_nodes) >= 1): break
+            couples -= 1
+            if(len(reachable_nodes) == 0): 
+                nodes.remove(random_start_node)
+                continue
+            random_end_node = random.choice(reachable_nodes)
+            if((random_start_node, random_end_node) not in result):
+                result.append((random_start_node, random_end_node))
+            
 
 
-        random_end_node = random.choice(reachable_nodes)
-
-
-        return random_start_node, random_end_node
+        return result
 
     def find_shortest_path(self, start: Node, end: Node) -> Tuple[List[Node], np.array] :
         '''
