@@ -267,10 +267,12 @@ class VoronoiGraphGenerator:
             couples -= 1
             if(len(reachable_nodes) == 0): 
                 nodes.remove(random_start_node)
+                couples += 1
                 continue
             random_end_node = random.choice(reachable_nodes)
-            if((random_start_node, random_end_node) not in result):
-                result.append((random_start_node, random_end_node))
+           
+            result.append((random_start_node, random_end_node))
+                
             
 
 

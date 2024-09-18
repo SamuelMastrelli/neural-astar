@@ -88,13 +88,13 @@ class Map_dataset(data.Dataset):
             opt_trajs.append(opt_traj)
             histories.append(historie)
          
-
+    
         
-        self.maps_design = self.toTensor(tlist=maps_design).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
-        self.starts = self.toTensor(tlist=starts).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
-        self.goals = self.toTensor(tlist=goals).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
-        self.opt_trajs = self.toTensor(tlist=opt_trajs).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
-        self.histories = self.toTensor(tlist=histories).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[1], map_design.shape[2])
+        self.maps_design = self.toTensor(tlist=maps_design).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+        self.starts = self.toTensor(tlist=starts).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+        self.goals = self.toTensor(tlist=goals).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+        self.opt_trajs = self.toTensor(tlist=opt_trajs).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+        self.histories = self.toTensor(tlist=histories).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
 
         
 
@@ -166,7 +166,9 @@ class Map_dataset(data.Dataset):
             histories_list.append(torch.from_numpy(histories))
             opt_trajs.append(torch.from_numpy(path))
 
-        return map_design.permute(1,0)[len(starts), :, :, :], self.toTensor(starts), self.toTensor(goals), self.toTensor(opt_trajs), self.toTensor(opt_trajs)
+        map_design = map_design.permute(1,0).unsqueeze(0).expand(len(starts), -1, -1, -1)
+        print(map_design.shape)
+        return map_design, self.toTensor(starts), self.toTensor(goals), self.toTensor(opt_trajs), self.toTensor(opt_trajs)
 
 
 
@@ -187,6 +189,7 @@ class Map_dataset(data.Dataset):
     def toTensor(self, tlist: list):
         dims = list(tlist[0].shape)
         result = torch.zeros(len(tlist), *dims)
+        
         i = 0
         for image in tlist:
             result[i] = image
