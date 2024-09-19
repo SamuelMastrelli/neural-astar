@@ -3,7 +3,6 @@ from __future__ import annotations, print_function
 import numpy as np
 import torch
 import torch.utils.data as data
-from neural_astar.planner.differentiable_astar import AstarOutput
 from PIL import Image
 import torchvision.transforms as transforms
 import os
@@ -11,6 +10,7 @@ from neural_astar.utils.voronoi_utilities.voronoi_graph_generator import Voronoi
 from neural_astar.utils.voronoi_utilities.Graph.voronoi_graph import Coordinate, Node, Graph
 import cv2
 from torchvision.utils import make_grid
+
 
 def visualize_results_voronoi(
     map_designs: torch.tensor, planner_outputs: torch.tensor, scale: int = 1
@@ -104,6 +104,8 @@ class Map_dataset(data.Dataset):
 
         img = cv2.imread(self.dir + "/" + self.cluster + "/" + image)
 
+        print(image)
+        print(img.shape)
         # Converti l'immagine in scala di grigi
         gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -145,7 +147,7 @@ class Map_dataset(data.Dataset):
         floor = int(split[1].split('.')[0])
 
         
-         
+        
         voronoi_graph_generator = VoronoiGraphGenerator(cluster=self.cluster, env_name=env_name, floor=floor)
         voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
         graph = voronoi_graph_generator.get_voronoi_graph()
