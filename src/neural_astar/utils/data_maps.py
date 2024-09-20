@@ -46,157 +46,181 @@ def visualize_results_voronoi(
 
 def create_dataloader(
         dir: str,
-        cluster: str,
+        filename: str,
         batch_size: int
 ) -> data.DataLoader:
     dataset = Map_dataset(
-        dir, cluster
+        dir, filename
     )
     return data.DataLoader(dataset, batch_size=batch_size, num_workers=0)
 
 
 class Map_dataset(data.Dataset):
-    def __init__(
-            self,
-            dir: str,
-            cluster: str,
-        ):
+    # def __init__(
+    #         self,
+    #         dir: str,
+    #         cluster: str,
+    #     ):
         
-        self.dir = dir 
-        self.cluster = cluster
-        dirname = os.fsdecode(dir)
-        maps_design = []
-        starts = []
-        goals = []
-        opt_trajs = []
-        histories = []
+    #     self.dir = dir 
+    #     self.cluster = cluster
+    #     dirname = os.fsdecode(dir)
+    #     maps_design = []
+    #     starts = []
+    #     goals = []
+    #     opt_trajs = []
+    #     histories = []
 
-        for image in os.listdir(dirname + "/" + cluster):
-            (
-                map_design,
-                start,
-                goal,
-                opt_traj,
-                historie,
-            ) = self._process(image)
+    #     for image in os.listdir(dirname + "/" + cluster):
+    #         (
+    #             map_design,
+    #             start,
+    #             goal,
+    #             opt_traj,
+    #             historie,
+    #         ) = self._process(image)
 
             
 
-            maps_design.append(map_design)
-            starts.append(start)
-            goals.append(goal)
-            opt_trajs.append(opt_traj)
-            histories.append(historie)
+    #         maps_design.append(map_design)
+    #         starts.append(start)
+    #         goals.append(goal)
+    #         opt_trajs.append(opt_traj)
+    #         histories.append(historie)
          
     
         
-        self.maps_design = self.toTensor(tlist=maps_design).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
-        self.starts = self.toTensor(tlist=starts).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
-        self.goals = self.toTensor(tlist=goals).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
-        self.opt_trajs = self.toTensor(tlist=opt_trajs).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
-        self.histories = self.toTensor(tlist=histories).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+    #     self.maps_design = self.toTensor(tlist=maps_design).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+    #     self.starts = self.toTensor(tlist=starts).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+    #     self.goals = self.toTensor(tlist=goals).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+    #     self.opt_trajs = self.toTensor(tlist=opt_trajs).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+    #     self.histories = self.toTensor(tlist=histories).reshape(len(maps_design)*map_design.shape[0], 1, map_design.shape[3], map_design.shape[3])
+
+    def __init__(
+         self,
+         dir: str,
+         filename: str   
+    ):
+        self.dirname = os.fsdecode(dir)
+        self.filename = filename
+        (
+            self.map_designs,
+            self.start_maps,
+            self.goal_maps,
+            self.opt_trajs,
+        ) = self._process(self.dirname, filename)
+        
+
+    def _process(self, dir, filename):
+        with np.load(dir +'/'+filename) as f:
+            maps_desings = torch.from_numpy(f['arr_0'])
+            start_maps = torch.from_numpy(f['arr_1'])
+            goal_maps = torch.from_numpy(f['arr_2'])
+            opt_trajs = torch.from_numpy(f['arr_3'])
+
+        return maps_desings, start_maps, goal_maps, opt_trajs
 
         
 
 
-    def _process(self, image: str):
-        #Da immagine a tensore
+    # def _process(self, image: str):
+    #     #Da immagine a tensore
 
-        img = cv2.imread(self.dir + "/" + self.cluster + "/" + image)
+    #     img = cv2.imread(self.dir + "/" + self.cluster + "/" + image)
 
-        print(image)
-        print(img.shape)
-        # Converti l'immagine in scala di grigi
-        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #     print(image)
+    #     print(img.shape)
+    #     # Converti l'immagine in scala di grigi
+    #     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        # Creare una maschera binaria delle aree bianche
-        _, binary_mask = cv2.threshold(gray_image, 240, 255, cv2.THRESH_BINARY)
+    #     # Creare una maschera binaria delle aree bianche
+    #     _, binary_mask = cv2.threshold(gray_image, 240, 255, cv2.THRESH_BINARY)
 
-        # Invertire la maschera
-        binary_mask_inv = cv2.bitwise_not(binary_mask)
+    #     # Invertire la maschera
+    #     binary_mask_inv = cv2.bitwise_not(binary_mask)
 
-        # Trova i contorni dell'edificio
-        contours, _ = cv2.findContours(binary_mask_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    #     # Trova i contorni dell'edificio
+    #     contours, _ = cv2.findContours(binary_mask_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Creare una maschera di riempimento
-        fill_mask = np.zeros_like(gray_image)
+    #     # Creare una maschera di riempimento
+    #     fill_mask = np.zeros_like(gray_image)
 
-        # Riempire solo le aree esterne all'edificio
-        cv2.drawContours(fill_mask, contours, -1, (255), thickness=cv2.FILLED)
+    #     # Riempire solo le aree esterne all'edificio
+    #     cv2.drawContours(fill_mask, contours, -1, (255), thickness=cv2.FILLED)
 
-        # Invertire la maschera di riempimento
-        fill_mask_inv = cv2.bitwise_not(fill_mask)
+    #     # Invertire la maschera di riempimento
+    #     fill_mask_inv = cv2.bitwise_not(fill_mask)
 
-        # Applicare la maschera per cambiare le aree esterne bianche in nero
-        img[fill_mask_inv == 255] = [0, 0, 0]
+    #     # Applicare la maschera per cambiare le aree esterne bianche in nero
+    #     img[fill_mask_inv == 255] = [0, 0, 0]
 
-        transform = transforms.Compose([
-                    transforms.ToTensor()
-                ])
+    #     transform = transforms.Compose([
+    #                 transforms.ToTensor()
+    #             ])
 
-        image_tensor = transform(img) 
+    #     image_tensor = transform(img) 
 
 
-        map_design = torch.clamp(image_tensor.mean(0), 0, 1)
-        map_design[map_design<0.9] = 0
-        map_design[map_design>=0.9] = 1
+    #     map_design = torch.clamp(image_tensor.mean(0), 0, 1)
+    #     map_design[map_design<0.9] = 0
+    #     map_design[map_design>=0.9] = 1
        
-        #Grafo di voronoi
-        split = image.split('_floor_')
-        env_name = split[0]
-        floor = int(split[1].split('.')[0])
+    #     #Grafo di voronoi
+    #     split = image.split('_floor_')
+    #     env_name = split[0]
+    #     floor = int(split[1].split('.')[0])
 
         
         
-        voronoi_graph_generator = VoronoiGraphGenerator(cluster=self.cluster, env_name=env_name, floor=floor)
-        voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
-        graph = voronoi_graph_generator.get_voronoi_graph()
+    #     voronoi_graph_generator = VoronoiGraphGenerator(cluster=self.cluster, env_name=env_name, floor=floor)
+    #     voronoi_bitmap = voronoi_graph_generator.generate_voronoi_bitmap()
+    #     graph = voronoi_graph_generator.get_voronoi_graph()
         
-        starts: list[torch.Tensor] = []
-        goals: list[torch.Tensor] = []
-        opt_trajs: list[torch.Tensor] = []
-        histories_list: list[torch.Tensor] = []
+    #     starts: list[torch.Tensor] = []
+    #     goals: list[torch.Tensor] = []
+    #     opt_trajs: list[torch.Tensor] = []
+    #     histories_list: list[torch.Tensor] = []
 
-        #Scelta goal e start
-        start_goal_list = voronoi_graph_generator.select_reachable_nodes()
-        for (start, goal) in start_goal_list:
-            starts.append(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])))
-            goals.append(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])))
-            #path ottimo
-            path, histories = voronoi_graph_generator.find_shortest_path(start, goal)
-            path = voronoi_graph_generator.to_numpy_array(path)
-            histories_list.append(torch.from_numpy(histories))
-            opt_trajs.append(torch.from_numpy(path))
+    #     #Scelta goal e start
+    #     start_goal_list = voronoi_graph_generator.select_reachable_nodes()
+    #     for (start, goal) in start_goal_list:
+    #         starts.append(torch.from_numpy(voronoi_graph_generator.to_numpy_array([start])))
+    #         goals.append(torch.from_numpy(voronoi_graph_generator.to_numpy_array([goal])))
+    #         #path ottimo
+    #         path, histories = voronoi_graph_generator.find_shortest_path(start, goal)
+    #         path = voronoi_graph_generator.to_numpy_array(path)
+    #         histories_list.append(torch.from_numpy(histories))
+    #         opt_trajs.append(torch.from_numpy(path))
 
-        map_design = map_design.permute(1,0).unsqueeze(0).expand(len(starts), -1, -1, -1)
-        print(map_design.shape)
-        return map_design, self.toTensor(starts), self.toTensor(goals), self.toTensor(opt_trajs), self.toTensor(opt_trajs)
+    #     map_design = map_design.permute(1,0).unsqueeze(0).expand(len(starts), -1, -1, -1)
+    #     print(map_design.shape)
+    #     return map_design, self.toTensor(starts), self.toTensor(goals), self.toTensor(opt_trajs), self.toTensor(opt_trajs)
 
 
 
 
     def __getitem__(self, index: int):
-        map = self.maps_design[index]
-        start_map = self.starts[index]
-        goal_map = self.goals[index]
+        map = self.map_designs[index]
+        start_map = self.start_maps[index]
+        goal_map = self.goal_maps[index]
         opt_traj = self.opt_trajs[index]
-        histories = self.histories[index]
+
     
 
-        return map, start_map, goal_map, opt_traj, histories
+        return map, start_map, goal_map, opt_traj
 
     def __len__(self):
-        return self.maps_design.shape[0]
+        return self.map_designs.shape[0]
 
-    def toTensor(self, tlist: list):
-        dims = list(tlist[0].shape)
-        result = torch.zeros(len(tlist), *dims)
+    # def toTensor(self, tlist: list):
+    #     dims = list(tlist[0].shape)
+    #     result = torch.zeros(len(tlist), *dims)
         
-        i = 0
-        for image in tlist:
-            result[i] = image
-            i+=1
-        return result
+    #     i = 0
+    #     for image in tlist:
+    #         result[i] = image
+    #         i+=1
+    #     return result
     
     '''
     def resize_tensor(self, tensor, new_shape: tuple):
