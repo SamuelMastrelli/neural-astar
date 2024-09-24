@@ -25,8 +25,8 @@ class VoronoiGraphGenerator:
         self._floor = floor
 
         try:
-            self._map = cv2.imread(os.path.join(os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps', cluster, env_name + '_floor_' + str(floor) + '.png'))
-            with open(os.path.join(os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_metadata', env_name + '_floor_' + str(floor)) + '.yaml', mode='r') as f:
+            self._map = cv2.imread(os.path.join(os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps', cluster, env_name + '_floor_' + str(floor) + '.png'))
+            with open(os.path.join(os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_metadata', env_name + '_floor_' + str(floor)) + '.yaml', mode='r') as f:
                 map_metadata: Dict = yaml.load(f, Loader=yaml.FullLoader)
             self._scale = map_metadata['scale']
             self._map_origin = Coordinate(x=map_metadata['origin']['x'], y=map_metadata['origin']['y'],

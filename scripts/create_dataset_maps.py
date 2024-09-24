@@ -2,20 +2,10 @@ from __future__ import annotations, print_function
 
 import numpy as np
 import torch
-import torch.utils.data as data
-from PIL import Image
 import torchvision.transforms as transforms
 import os
 from neural_astar.utils.voronoi_utilities.voronoi_graph_generator import VoronoiGraphGenerator
-from neural_astar.utils.voronoi_utilities.Graph.voronoi_graph import Coordinate, Node, Graph
 import cv2
-from torchvision.utils import make_grid
-
-
-
-
-
-
 
 
 
@@ -138,13 +128,13 @@ def generate(dir: str, cluster: str):
 
 
 
-dir = '/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps' 
+dir = '/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/maps_data/maps' 
 
-# maps_test, starts_test, goals_test, opt_trajs_test = generate(dir, 'test_resized')
-# maps_train, starts_train, goals_train, opt_trajs_train = generate(dir, 'train_resized')
+maps_test, starts_test, goals_test, opt_trajs_test = generate(dir, 'test_resized')
+maps_train, starts_train, goals_train, opt_trajs_train = generate(dir, 'train_resized')
 maps_validation, starts_validation, goals_validation, opt_trajs_validation = generate(dir, 'validation_resized')
 
-# np.savez('/home/sam/Desktop/Tesi/neural-astar/src/maps_npz/test/test_ds', maps_test.numpy(), starts_test.numpy(), goals_test.numpy(), opt_trajs_test.numpy())
-# np.savez('/home/sam/Desktop/Tesi/neural-astar/src/maps_npz/train/train_ds', maps_train.numpy(), starts_train.numpy(), goals_train.numpy(), opt_trajs_train.numpy())
-np.savez('/home/sam/Desktop/Tesi/neural-astar/src/maps_npz/validation/validation_ds', maps_validation.numpy(), starts_validation.numpy(), 
+np.savez('/home/mastrelli/neural-astar/src/maps_npz/', maps_test.numpy(), starts_test.numpy(), goals_test.numpy(), opt_trajs_test.numpy())
+np.savez('/home/mastrelli/neural-astar/src/maps_npz/', maps_train.numpy(), starts_train.numpy(), goals_train.numpy(), opt_trajs_train.numpy())
+np.savez('/home/mastrelli/neural-astar/src/maps_npz/', maps_validation.numpy(), starts_validation.numpy(), 
           goals_validation.numpy(), opt_trajs_validation.numpy())
