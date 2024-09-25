@@ -12,6 +12,7 @@ import torch.nn as nn
 from . import encoder
 from .differentiable_astar import AstarOutput, DifferentiableAstar
 from .pq_astar import pq_astar
+from .greedy import greedy
 
 
 class VanillaAstar(nn.Module):
@@ -19,6 +20,7 @@ class VanillaAstar(nn.Module):
         self,
         g_ratio: float = 0.5,
         use_differentiable_astar: bool = True,
+        use_greedy: bool = False,
     ):
         """
         Vanilla A* search
@@ -44,6 +46,7 @@ class VanillaAstar(nn.Module):
         )
         self.g_ratio = g_ratio
         self.use_differentiable_astar = use_differentiable_astar
+        self.use_greedy = use_greedy
 
     def perform_astar(
         self,
@@ -54,12 +57,14 @@ class VanillaAstar(nn.Module):
         store_intermediate_results: bool = False,
     ) -> AstarOutput:
 
-        astar = (
-            self.astar
-            if self.use_differentiable_astar
-            else partial(pq_astar, g_ratio=self.g_ratio)
-        )
 
+        if self.use_differentiable_astar:
+                astar = self.astar
+        elif self.use_greedy: 
+                astar = partial(greedy, g_ratio=self.g_ratio)
+        else:
+             astar = partial(pq_astar, g_ratio=self.g_ratio)
+ 
         astar_outputs = astar(
             map_designs,
             start_maps,

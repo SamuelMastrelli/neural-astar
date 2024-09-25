@@ -22,7 +22,8 @@ def main(config):
         planner.load_state_dict(
             load_from_ptl_checkpoint(f"{config.modeldir}/{dataname}")
         )
-
+    elif config.planner == "g":
+        planner = VanillaAstar(use_greedy=True)
     else:
         planner = VanillaAstar()
 
