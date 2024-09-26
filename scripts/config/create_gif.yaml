@@ -2,8 +2,7 @@ seed: 1234
 dataset: "planning-datasets/data/mpd/mazes_032_moore_c8" #"planning-datasets/data/sdd/s064_0.5_128_300/gates/video0/00000000_01" 
 modeldir: "model"
 resultdir: "gif"
-planner: "g"   # either na or va
-
+planner: "va"   # either na or va
 encoder:
   input: "m+"
   arch: "CNN"

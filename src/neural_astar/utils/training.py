@@ -95,9 +95,6 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
             pathlen_model = outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
 
             p_opt = (pathlen_astar == pathlen_model).mean()
-
-            p_exp = np.maximum((exp_astar - exp_na) / exp_astar, 0.0).mean()
-
             
             p_exp = np.maximum((exp_astar - exp_na) / exp_astar, 0.0).mean()
 

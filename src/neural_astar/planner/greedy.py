@@ -43,10 +43,10 @@ def compute_chebyshev_distance(idx: int, goal_idx: int, W: int) -> float:
 
     loc = np.array([idx % W, idx // W])
     goal_loc = np.array([goal_idx % W, goal_idx // W])
-    dxdy = np.abs(loc - goal_loc)
-    h = dxdy.sum() - dxdy.min()
+    #dxdy = np.abs(loc - goal_loc)
+    #h = dxdy.sum() - dxdy.min()
     euc = np.sqrt(((loc - goal_loc) ** 2).sum())
-    return h + 0.001 * euc
+    return euc
 
 
 def get_history(close_list: list, H: int, W: int) -> np.array:
@@ -120,7 +120,7 @@ def solve_single(
     start_idx = np.argwhere(start_map.flatten()).item()
     goal_idx = np.argwhere(goal_map.flatten()).item()
     map_design_vct = map_design.flatten()
-    pred_cost_vct = pred_cost.flatten()
+    #pred_cost_vct = pred_cost.flatten()
     open_list = pqdict()
     close_list = pqdict()
     open_list.additem(start_idx, 0)
@@ -133,17 +133,15 @@ def solve_single(
             print("goal not found")
             return np.zeros_like(goal_map), np.zeros_like(goal_map)
         num_steps += 1
-        idx_selected, f_selected = open_list.popitem()
-        close_list.additem(idx_selected, f_selected)
+        idx_selected, h_selected = open_list.popitem()
+        close_list.additem(idx_selected, h_selected)
         for idx_nei in get_neighbor_indices(idx_selected, H, W):
 
             if map_design_vct[idx_nei] == 1:
-                f_new = (
+                h_new = (
                     
-                     (1 - g_ratio)
-                    * compute_chebyshev_distance(idx_selected, goal_idx, W)
-                    + g_ratio * pred_cost_vct[idx_nei]
-                    + (1 - g_ratio) * compute_chebyshev_distance(idx_nei, goal_idx, W)
+                     compute_chebyshev_distance(idx_selected, goal_idx, W)
+
                 )
 
                 # conditions for the nodes not yet in the open list nor closed list
@@ -151,13 +149,13 @@ def solve_single(
 
                 # condition for the nodes already in the open list but with larger f value
                 if idx_nei in open_list:
-                    cond = cond | (open_list[idx_nei] > f_new)
+                    cond = cond | (open_list[idx_nei] > h_new)
 
                 if cond:
                     try:
-                        open_list.additem(idx_nei, f_new)
+                        open_list.additem(idx_nei, h_new)
                     except:
-                        open_list[idx_nei] = f_new
+                        open_list[idx_nei] = h_new
                     parent_list[idx_nei] = idx_selected
 
     history_map = get_history(close_list, H, W)

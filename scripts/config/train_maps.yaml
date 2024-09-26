@@ -1,6 +1,6 @@
 seed: 1234
-dataset: "src/neural_astar/utils/voronoi_utilities/maps_data/maps"
-logdir: "model"
+dataset: "src/maps_npz/"
+logdir: "model/voronoi"
 Tmax: 0.25
 
 
@@ -11,7 +11,7 @@ encoder:
 
 
 params: 
-  batch_size:  8
+  batch_size:  10
   num_epochs: 30
   lr: 0.001
 
