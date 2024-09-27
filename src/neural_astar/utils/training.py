@@ -17,6 +17,7 @@ import torch.optim
 from neural_astar.planner.astar import VanillaAstar
 
 
+
 def load_from_ptl_checkpoint(checkpoint_path: str) -> dict:
     """
     Load model weights from PyTorch Lightning checkpoint.
@@ -59,7 +60,7 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
 
     def training_step(self, train_batch, batch_idx):
 
-        map_designs, start_maps, goal_maps, opt_trajs, _ = train_batch
+        map_designs, start_maps, goal_maps, opt_trajs = train_batch
     
         outputs = self.forward(map_designs, start_maps, goal_maps)
         loss = nn.L1Loss()(outputs.histories, opt_trajs)
@@ -69,10 +70,7 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
 
     def validation_step(self, val_batch, batch_idx):
 
-        if(self.maps):
-            map_designs, start_maps, goal_maps, opt_trajs, histories = val_batch
-        else: 
-            map_designs, start_maps, goal_maps, opt_trajs, _ = val_batch
+        map_designs, start_maps, goal_maps, opt_trajs = val_batch
         outputs = self.forward(map_designs, start_maps, goal_maps)
         loss = nn.L1Loss()(outputs.histories, opt_trajs)
 
@@ -82,13 +80,13 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
         if map_designs.shape[1] == 1:
 
             if(self.maps):
-                pathlen_astar = opt_trajs.sum((1,2,3)).detach().cpu().numpy()
-                exp_astar = histories.sum((1,2,3)).detach().cpu().numpy()
+                gr_output = VanillaAstar(use_greedy=True)(map_designs, start_maps, goal_maps)
+                pathlen_astar = gr_output.path.sum((1,2,3)).detach().cpu().numpy()
+                exp_astar = gr_output.histories.sum((1,2,3)).detach().cpu().numpy()
 
             else:
                 va_outputs = self.vanilla_astar(map_designs, start_maps, goal_maps)
-                pathlen_astar = va_outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
-                
+                pathlen_astar = va_outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()  
                 exp_astar = va_outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
 
             exp_na = outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()

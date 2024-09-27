@@ -22,8 +22,8 @@ import os
 def main(config):
     torch.cuda.empty_cache()
     set_global_seeds(config.seed)
-    train_loader = create_dataloader(dir=config.dataset, filename="train_ds", batch_size=config.params.batch_size)
-    val_loader = create_dataloader(dir=config.dataset, filename="validation_ds", batch_size=config.params.batch_size)
+    train_loader = create_dataloader(dir=config.dataset, filename="train_ds.npz", batch_size=config.params.batch_size)
+    val_loader = create_dataloader(dir=config.dataset, filename="validation_ds.npz", batch_size=config.params.batch_size)
 
   
 
