@@ -134,7 +134,7 @@ maps_test, starts_test, goals_test, opt_trajs_test = generate(dir, 'test_resized
 maps_train, starts_train, goals_train, opt_trajs_train = generate(dir, 'train_resized')
 maps_validation, starts_validation, goals_validation, opt_trajs_validation = generate(dir, 'validation_resized')
 
-np.savez('/home/mastrelli/neural-astar/src/maps_npz/', maps_test.numpy(), starts_test.numpy(), goals_test.numpy(), opt_trajs_test.numpy())
-np.savez('/home/mastrelli/neural-astar/src/maps_npz/', maps_train.numpy(), starts_train.numpy(), goals_train.numpy(), opt_trajs_train.numpy())
-np.savez('/home/mastrelli/neural-astar/src/maps_npz/', maps_validation.numpy(), starts_validation.numpy(), 
+np.savez('/home/mastrelli/neural-astar/src/maps_npz/test_ds.npz', maps_test.numpy(), starts_test.numpy(), goals_test.numpy(), opt_trajs_test.numpy())
+np.savez('/home/mastrelli/neural-astar/src/maps_npz/train_ds.npz', maps_train.numpy(), starts_train.numpy(), goals_train.numpy(), opt_trajs_train.numpy())
+np.savez('/home/mastrelli/neural-astar/src/maps_npz/validation_ds.npz', maps_validation.numpy(), starts_validation.numpy(), 
           goals_validation.numpy(), opt_trajs_validation.numpy())
