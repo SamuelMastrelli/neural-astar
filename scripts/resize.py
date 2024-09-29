@@ -10,8 +10,8 @@ for cluster in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/ma
         for img in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster):
             image = Image.open('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'/'+img)
 
-            if image.size[0] >= 700 and image.size[1] >= 700:
-                tr = transforms.Resize(450)
+            if image.size[0] >= 800 and image.size[1] >= 800:
+                tr = transforms.Resize(500)
                 res = tr(image)
 
                 transform = transforms.Compose([
