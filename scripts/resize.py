@@ -10,17 +10,32 @@ for cluster in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/ma
         for img in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster):
             image = Image.open('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'/'+img).convert('1')
 
-            if image.size[0] >= 800 and image.size[1] >= 800:
-                res=image.resize((500, 500), Image.LANCZOS)
+            pixel_data = image.getdata()
 
-                transform = transforms.Compose([
-                            transforms.ToTensor()
-                        ])
+            # Conta i pixel neri (0) e bianchi (255)
+            black = sum(1 for pixel in pixel_data if pixel == 0)
+            total_pixel = len(pixel_data)
 
-                image_tensor = transform(res) 
+            # Calcola la percentuale di nero
+            perc_black = (black / total_pixel) * 100
 
-                name = img.split(".")[0]
+            if perc_black >= 5.0:
 
-                transforms.ToPILImage()(image_tensor).save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+name+".jpg", quality=100)
-            else:
-                image.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/DiscardedImages/' + img )
+                if image.size[0] >= 800 and image.size[1] >= 800:
+                    res=image.resize((500, 500), Image.LANCZOS)
+
+                    transform = transforms.Compose([
+                                transforms.ToTensor()
+                            ])
+
+                    image_tensor = transform(res) 
+
+                    # Ottieni i dati dei pixel
+
+
+                    name = img.split(".")[0]
+
+                    transforms.ToPILImage()(image_tensor).save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+name+".jpg", quality=100)
+                else:
+                    image.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/DiscardedImages/' + img )
+            else: image.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/DiscardedImages/' + img )
