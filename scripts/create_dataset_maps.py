@@ -44,12 +44,11 @@ def process(dir: str, cluster: str, image: str):
                     transforms.ToTensor()
                 ])
 
-        image_tensor = transform(img) 
+        image_tensor = transform(img)
 
 
-        map_design = torch.clamp(image_tensor.mean(0), 0, 1)
-        map_design[map_design<0.9] = 0
-        map_design[map_design>=0.9] = 1
+        map_design = torch.clamp(image_tensor.mean(0), 0, 1).detach()
+
        
         #Grafo di voronoi
         split = image.split('_floor_')

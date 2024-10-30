@@ -248,7 +248,7 @@ class VoronoiGraphGenerator:
             for neighbor in current_node.get_connected_nodes():
                 if neighbor not in visited:
                     queue.append(neighbor)
-        return [node for node in reachable_nodes if (self.dist_between(start_node, node)) >= 10]
+        return [node for node in reachable_nodes if (self.dist_between(start_node, node)) >= 20]
                     
     def select_reachable_nodes(self) -> List[Tuple[Node, Node]]:
         '''
@@ -257,7 +257,7 @@ class VoronoiGraphGenerator:
         '''
         nodes = list(self._graph.get_nodes().values())
         lenght = len(self._graph.get_nodes())
-        couples = 10
+        couples = 5
 
         result: List[Tuple[Node, Node]] = []
        
