@@ -1,7 +1,7 @@
 seed: 1234
 dataset: "src/maps_npz"
 logdir: "model/voronoi"
-Tmax: 0.025
+Tmax: 0.035
 
 
 encoder:
@@ -12,7 +12,7 @@ encoder:
 
 params: 
   batch_size: 5
-  num_epochs: 20
+  num_epochs: 50
   lr: 0.01
 
 

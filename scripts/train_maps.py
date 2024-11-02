@@ -41,7 +41,7 @@ def main(config):
         monitor="metrics/h_mean", save_weights_only=False, mode="max"
     )
 
-    module = PlannerModule(neural_astar, config, True)
+    module = PlannerModule(neural_astar, config)
     logdir = f"{config.logdir}/{os.path.basename(config.dataset)}"
     trainer = pl.Trainer(
         precision=16,
