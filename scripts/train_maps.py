@@ -17,7 +17,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 import sys
 import os
 
-
 @hydra.main(config_path="config", config_name="train_maps")
 def main(config):
     torch.cuda.empty_cache()
@@ -42,9 +41,10 @@ def main(config):
         monitor="metrics/h_mean", save_weights_only=False, mode="max"
     )
 
-    module = PlannerModule(neural_astar, config)
+    module = PlannerModule(neural_astar, config, True)
     logdir = f"{config.logdir}/{os.path.basename(config.dataset)}"
     trainer = pl.Trainer(
+        precision=16,
         accelerator= "gpu" if torch.cuda.is_available() else "cpu",
         log_every_n_steps=1,
         default_root_dir=logdir,

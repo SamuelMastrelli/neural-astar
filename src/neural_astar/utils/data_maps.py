@@ -102,24 +102,17 @@ class Map_dataset(data.Dataset):
          filename: str   
     ):
         self.dirname = os.fsdecode(dir)
-        self.filename = filename
-        (
-            self.map_designs,
-            self.start_maps,
-            self.goal_maps,
-            self.opt_trajs,
-        ) = self._process(self.dirname, filename)
-        
+        self.filepath = os.path.join(self.dirname, filename)
 
-    def _process(self, dir, filename):
-        with np.load(dir +'/'+filename) as f:
-            maps_desings = torch.from_numpy(f['arr_0'])
-            start_maps = torch.from_numpy(f['arr_1'])
-            goal_maps = torch.from_numpy(f['arr_2'])
-            opt_trajs = torch.from_numpy(f['arr_3'])
-
-        return maps_desings, start_maps, goal_maps, opt_trajs
-
+        # Solo metadati, senza caricare tutto il dataset in memoria
+        with np.load(self.filepath) as f:
+            self.num_samples = f['arr_0'].shape[0]  # Numero totale di esempi
+            self.data_shapes = {
+                'map_designs': f['arr_0'].shape[1:],
+                'start_maps': f['arr_1'].shape[1:],
+                'goal_maps': f['arr_2'].shape[1:],
+                'opt_trajs': f['arr_3'].shape[1:]
+            }
         
 
 
@@ -199,18 +192,22 @@ class Map_dataset(data.Dataset):
 
 
 
+    def _load_single_sample(self, index):
+        """Carica solo il campione richiesto dall'indice specificato."""
+        with np.load(self.filepath) as f:
+            map_design = torch.from_numpy(f['arr_0'][index])
+            start_map = torch.from_numpy(f['arr_1'][index])
+            goal_map = torch.from_numpy(f['arr_2'][index])
+            opt_traj = torch.from_numpy(f['arr_3'][index])
+        return map_design, start_map, goal_map, opt_traj
+
     def __getitem__(self, index: int):
-        map = self.map_designs[index]
-        start_map = self.start_maps[index]
-        goal_map = self.goal_maps[index]
-        opt_traj = self.opt_trajs[index]
-
-    
-
-        return map, start_map, goal_map, opt_traj
+        # Carica solo il campione richiesto
+        return self._load_single_sample(index)
 
     def __len__(self):
-        return self.map_designs.shape[0]
+        # Ritorna il numero di campioni totale, basato sui metadati
+        return self.num_samples
 
     # def toTensor(self, tlist: list):
     #     dims = list(tlist[0].shape)

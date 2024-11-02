@@ -28,21 +28,21 @@ for cluster in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/ma
 
                     newImage = transforms.ToPILImage()(image_tensor.detach())
 
-                    pixel_data = newImage.getdata()
+                    # pixel_data = newImage.getdata()
 
-                    # Conta i pixel neri (0) e bianchi (255)
-                    black = sum(1 for pixel in pixel_data if pixel == 0)
-                    total_pixel = len(pixel_data)
+                    # # Conta i pixel neri (0) e bianchi (255)
+                    # black = sum(1 for pixel in pixel_data if pixel == 0)
+                    # total_pixel = len(pixel_data)
 
-                    # Calcola la percentuale di nero
-                    perc_black = (black / total_pixel) * 100
+                    # # Calcola la percentuale di nero
+                    # perc_black = (black / total_pixel) * 100
 
-                    if perc_black >= 9.0:
+                    # if perc_black >= 0.0:
 
-                        name = img.split(".")[0]
+                    name = img.split(".")[0]
 
-                        newImage.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+name+".jpg", quality=100)
-                    else : image.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/DiscardedImages/' + img )
+                    newImage.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+name+".jpg", quality=100)
+                    
             else:
                     image.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/DiscardedImages/' + img )
             

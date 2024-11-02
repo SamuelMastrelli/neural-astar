@@ -47,7 +47,7 @@ def process(dir: str, cluster: str, image: str):
         image_tensor = transform(img)
 
 
-        map_design = torch.clamp(image_tensor.mean(0), 0, 1).detach()
+        map_design = torch.clamp(image_tensor.mean(0), 0, 1)
 
        
         #Grafo di voronoi

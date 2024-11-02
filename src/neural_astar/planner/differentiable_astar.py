@@ -69,7 +69,7 @@ def _st_softmax_noexp(val: torch.tensor) -> torch.tensor: #Softmax per trovare i
 
     val_ = val.reshape(val.shape[0], -1)
 
-    y = val_ / (val_.sum(dim=-1, keepdim=True) + 1e-10)
+    y = val_ / (val_.sum(dim=-1, keepdim=True) + 1e-8)
  
     _, ind = y.max(dim=-1)
     y_hard = torch.zeros_like(y)
@@ -98,7 +98,7 @@ def expand(x: torch.tensor, neighbor_filter: torch.tensor) -> torch.tensor: #Nod
 
     x = x.unsqueeze(0)
     num_samples = x.shape[1]
-    y = F.conv2d(x, neighbor_filter, padding=1, groups=num_samples).squeeze()
+    y = F.conv2d(x.to('cuda'), neighbor_filter.to('cuda'), padding=1, groups=num_samples).squeeze()
     y = y.squeeze(0)
     return y
 
@@ -121,8 +121,6 @@ def backtrack(
     Returns:
         torch.tensor: solution paths
     """
-
-    num_samples = start_maps.shape[0]
     parents = parents.type(torch.long)
     goal_maps = goal_maps.type(torch.long)
     start_maps = start_maps.type(torch.long)
@@ -217,6 +215,7 @@ class DifferentiableAstar(nn.Module):
         Tmax = int(Tmax * size * size)
         for t in range(Tmax):
 
+    
             # select the node that minimizes cost
             f = self.g_ratio * g + (1 - self.g_ratio) * h #f di a start con ratio tra g e h
             f_exp = torch.exp(-1 * f / math.sqrt(cost_maps.shape[-1])) #attivazione di hubara, con temperatura come radice della dimensione -1 dei costi [width]

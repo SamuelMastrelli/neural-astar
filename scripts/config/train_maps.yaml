@@ -1,19 +1,20 @@
 seed: 1234
 dataset: "src/maps_npz"
 logdir: "model/voronoi"
-Tmax: 0.25
+Tmax: 0.025
 
 
 encoder:
   input: "m+"
   arch: "CNN"
-  depth: 4
+  depth: 3
 
 
 params: 
   batch_size: 5
-  num_epochs: 30
-  lr: 0.001
+  num_epochs: 20
+  lr: 0.01
+
 
 
 hydra:
