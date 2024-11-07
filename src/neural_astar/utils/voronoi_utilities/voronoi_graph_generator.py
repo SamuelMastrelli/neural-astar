@@ -213,7 +213,7 @@ class VoronoiGraphGenerator:
         if save_to_file:
             # Save voronoi bitmap
             cv2.imwrite(os.path.join(
-                os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
+                os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
                 self._env_name + '_floor_' + str(self._floor) + '.png'),
                 self._voronoi_bitmap)
 
@@ -221,7 +221,7 @@ class VoronoiGraphGenerator:
             map_voronoi_bitmap = self._map.copy()
             map_voronoi_bitmap[self._voronoi_bitmap == 0] = 0
             cv2.imwrite(os.path.join(
-                os.path.dirname('/home/sam/Desktop/Tesi/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_with_voronoi_bitmaps',
+                os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'maps_with_voronoi_bitmaps',
                 self._env_name + '_floor_' +  str(self._floor) + '.png'),
                 map_voronoi_bitmap)
 
