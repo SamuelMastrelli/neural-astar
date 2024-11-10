@@ -12,7 +12,11 @@ encoder:
 
 params: 
   batch_size: 5
-  num_epochs: 10
+<<<<<<< HEAD
+  num_epochs: 50
+=======
+  num_epochs: 20
+>>>>>>> 3437debecc8b8672c0384086673f815e3198a85a
   lr: 0.01
 
 
