@@ -69,7 +69,7 @@ def _st_softmax_noexp(val: torch.tensor) -> torch.tensor: #Softmax per trovare i
 
     val_ = val.reshape(val.shape[0], -1)
 
-    y = val_ / (val_.sum(dim=-1, keepdim=True) + 1e-8)
+    y = val_ / (val_.sum(dim=-1, keepdim=True))
  
     _, ind = y.max(dim=-1)
     y_hard = torch.zeros_like(y)
@@ -98,7 +98,7 @@ def expand(x: torch.tensor, neighbor_filter: torch.tensor) -> torch.tensor: #Nod
 
     x = x.unsqueeze(0)
     num_samples = x.shape[1]
-    y = F.conv2d(x.to('cuda'), neighbor_filter.to('cuda'), padding=1, groups=num_samples).squeeze()
+    y = F.conv2d(x, neighbor_filter, padding=1, groups=num_samples).squeeze()
     y = y.squeeze(0)
     return y
 
@@ -127,11 +127,12 @@ def backtrack(
     path_maps = goal_maps.type(torch.long)
     num_samples = len(parents)  ##Why?
     loc = (parents * goal_maps.view(num_samples, -1)).sum(-1)
-
+  
 
     for _ in range(current_t):
         path_maps.view(num_samples, -1)[range(num_samples), loc] = 1
         loc = parents[range(num_samples), loc]
+ 
     return path_maps
 
 

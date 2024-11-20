@@ -19,7 +19,7 @@ class VanillaAstar(nn.Module):
     def __init__(
         self,
         g_ratio: float = 0.5,
-        use_differentiable_astar: bool = True,
+        use_differentiable_astar: bool = False,
         use_greedy: bool = False,
     ):
         """
@@ -61,6 +61,7 @@ class VanillaAstar(nn.Module):
         if self.use_differentiable_astar:
                 astar = self.astar
         elif self.use_greedy: 
+                print('Greedy')
                 astar = partial(greedy, g_ratio=self.g_ratio)
         else:
              astar = partial(pq_astar, g_ratio=self.g_ratio)

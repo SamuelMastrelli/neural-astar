@@ -163,6 +163,7 @@ class MazeDataset(data.Dataset):
         start_map = np.concatenate(start_maps)
         opt_traj = np.concatenate(opt_trajs)
 
+        print(type(map_design))
         return map_design, start_map, goal_map, opt_traj
 
     def __len__(self):

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import numpy as np
 import torch
-from pqdict import pqdict #Dictionary with priority queue
+from pqdict import pqdict
 
 from .differentiable_astar import AstarOutput
 
@@ -52,8 +52,7 @@ def get_history(close_list: list, H: int, W: int) -> np.array:
 
     history = np.array([[idx % W, idx // W] for idx in close_list.keys()])
     history_map = np.zeros((H, W))
-    history_map[history[:, 1], history[:, 0]] = 1 #La dicitura [:, n] restituisce un array con gli elementi in posizione n delle righe della matrice
-    #Passando un array come indice, ad esmepio 0 1 2, voglio che vengano modificate le caselle nella riga 0, 1, 2, stesso ragionamento per la colonna
+    history_map[history[:, 1], history[:, 0]] = 1
 
     return history_map
 
@@ -132,9 +131,10 @@ def solve_single(
             return np.zeros_like(goal_map), np.zeros_like(goal_map)
         num_steps += 1
         idx_selected, f_selected = open_list.popitem()
+        print(idx_selected)
         close_list.additem(idx_selected, f_selected)
         for idx_nei in get_neighbor_indices(idx_selected, H, W):
-
+            print(idx_nei)
             if map_design_vct[idx_nei] == 1:
                 f_new = (
                     f_selected

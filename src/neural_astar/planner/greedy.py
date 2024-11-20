@@ -137,7 +137,9 @@ def solve_single(
 
             if map_design_vct[idx_nei] == 1:
                 h_new = (
+                    
                      compute_chebyshev_distance(idx_selected, goal_idx, W)
+                     
 
                 )
 
