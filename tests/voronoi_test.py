@@ -38,7 +38,7 @@ def test_graph_connected_components():
     assert np.array_equal(components_image, voronoi_bitmap)
 
 def test_start_goal_shortest_path():
-    voronoi_graph_generator = VoronoiGraphGenerator(cluster='validation_resized', env_name='area5_2', floor=0)
+    voronoi_graph_generator = VoronoiGraphGenerator(cluster='train_resized', env_name='area4', floor=0)
     vb = voronoi_graph_generator.generate_voronoi_bitmap(True)
 
     se = voronoi_graph_generator.select_reachable_nodes()

@@ -108,9 +108,11 @@ def greedy(
 
 
 def solve_single(
+    pred_cost: np.array,
     start_map: np.array,
     goal_map: np.array,
     map_design: np.array,
+    g_ratio: float = 0.5,
 ) -> list:
     """Solve a single problem"""
 

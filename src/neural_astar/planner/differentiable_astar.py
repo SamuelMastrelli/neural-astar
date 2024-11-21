@@ -69,7 +69,7 @@ def _st_softmax_noexp(val: torch.tensor) -> torch.tensor: #Softmax per trovare i
 
     val_ = val.reshape(val.shape[0], -1)
 
-    y = val_ / (val_.sum(dim=-1, keepdim=True))
+    y = val_ / (val_.sum(dim=-1, keepdim=True) + 1e-8)
  
     _, ind = y.max(dim=-1)
     y_hard = torch.zeros_like(y)
@@ -128,11 +128,10 @@ def backtrack(
     num_samples = len(parents)  ##Why?
     loc = (parents * goal_maps.view(num_samples, -1)).sum(-1)
   
-
+   
     for _ in range(current_t):
         path_maps.view(num_samples, -1)[range(num_samples), loc] = 1
         loc = parents[range(num_samples), loc]
- 
     return path_maps
 
 
@@ -219,7 +218,8 @@ class DifferentiableAstar(nn.Module):
     
             # select the node that minimizes cost
             f = self.g_ratio * g + (1 - self.g_ratio) * h #f di a start con ratio tra g e h
-            f_exp = torch.exp(-1 * f / math.sqrt(cost_maps.shape[-1])) #attivazione di hubara, con temperatura come radice della dimensione -1 dei costi [width]
+            f_exp = torch.exp(-1 * f / math.sqrt(cost_maps.shape[-1]))
+  #attivazione di hubara, con temperatura come radice della dimensione -1 dei costi [width]
 
             f_exp = f_exp * open_maps #Scherma con i nodi aperti
             selected_node_maps = _st_softmax_noexp(f_exp) #Selezione nodo migliore
@@ -242,8 +242,11 @@ class DifferentiableAstar(nn.Module):
             open_maps = torch.clamp(open_maps, 0, 1)
 
             # open neighboring nodes, add them to the openlist if they satisfy certain requirements
+          
+                    
             neighbor_nodes = expand(selected_node_maps, neighbor_filter)
             neighbor_nodes = neighbor_nodes * obstacles_maps
+
 
             # update g if one of the following conditions is met
             # 1) neighbor is not in the close list (1 - histories) nor in the open list (1 - open_maps)
@@ -265,6 +268,7 @@ class DifferentiableAstar(nn.Module):
             new_parents = snm.max(-1, keepdim=True)[1]
     
             parents = new_parents * idx + parents * (1 - idx)
+
 
 
             if torch.all(is_unsolved.flatten() == 0):

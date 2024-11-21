@@ -12,8 +12,8 @@ for cluster in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/ma
 
 
 
-            if image.size[0] >= 800 and image.size[1] >= 800:
-                    res=transforms.Resize(400)(image)
+            if image.size[0] >= 200 and image.size[0] <=400 and image.size[1] <=400 and image.size[1] >= 200:
+                    res=transforms.Resize(200)(image)
 
                     transform = transforms.Compose([
                                 transforms.ToTensor()
