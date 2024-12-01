@@ -131,10 +131,10 @@ def solve_single(
             return np.zeros_like(goal_map), np.zeros_like(goal_map)
         num_steps += 1
         idx_selected, f_selected = open_list.popitem()
-        print(idx_selected)
+       
         close_list.additem(idx_selected, f_selected)
         for idx_nei in get_neighbor_indices(idx_selected, H, W):
-            print(idx_nei)
+    
             if map_design_vct[idx_nei] == 1:
                 f_new = (
                     f_selected
