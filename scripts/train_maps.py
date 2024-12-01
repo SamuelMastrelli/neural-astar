@@ -21,10 +21,13 @@ import os
 def main(config):
     torch.cuda.empty_cache()
     set_global_seeds(config.seed)
+    print(torch.cuda.memory_allocated())
     train_loader = create_dataloader(dir=config.dataset, filename="train_ds.npz", batch_size=config.params.batch_size)
     val_loader = create_dataloader(dir=config.dataset, filename="validation_ds.npz", batch_size=config.params.batch_size)
+    print(torch.cuda.memory_allocated())
 
   
+
 
     neural_astar = NeuralAstar(
         encoder_arch=config.encoder.arch,
@@ -44,7 +47,6 @@ def main(config):
     module = PlannerModule(neural_astar, config)
     logdir = f"{config.logdir}/{os.path.basename(config.dataset)}"
     trainer = pl.Trainer(
-        precision=16,
         accelerator= "gpu" if torch.cuda.is_available() else "cpu",
         log_every_n_steps=1,
         default_root_dir=logdir,

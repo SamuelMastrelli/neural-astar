@@ -47,7 +47,7 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
     def __init__(self, planner, config, maps=False):
         super().__init__()
         self.planner = planner
-        self.vanilla_astar = VanillaAstar()
+        self.vanilla_astar = VanillaAstar(use_differentiable_astar=True)
         self.config = config
         self.maps = maps
       
@@ -68,7 +68,7 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
         return loss
 
     def validation_step(self, val_batch, batch_idx):
-       
+     
         map_designs, start_maps, goal_maps, opt_trajs = val_batch
         outputs = self.forward(map_designs, start_maps, goal_maps)
         loss = nn.L1Loss()(outputs.histories, opt_trajs)

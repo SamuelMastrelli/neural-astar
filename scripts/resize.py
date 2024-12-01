@@ -12,8 +12,8 @@ for cluster in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/ma
 
 
 
-            if image.size[0] >= 200 and image.size[0] <=400 and image.size[1] <=400 and image.size[1] >= 200:
-                    res=transforms.Resize(200)(image)
+            if image.size[0] >= 900 and image.size[1] >= 900:
+                    res=transforms.Resize(400)(image)
 
                     transform = transforms.Compose([
                                 transforms.ToTensor()
@@ -30,18 +30,11 @@ for cluster in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/ma
 
                     pixel_data = newImage.getdata()
 
-                    # Conta i pixel neri (0) e bianchi (255)
-                    black = sum(1 for pixel in pixel_data if pixel == 0)
-                    total_pixel = len(pixel_data)
+               
 
-                    # Calcola la percentuale di nero
-                    perc_black = (black / total_pixel) * 100
+                    name = img.split(".")[0]
 
-                    if perc_black >= 8.0:
-
-                        name = img.split(".")[0]
-
-                        newImage.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+name+".jpg", quality=100)
+                    newImage.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/'+cluster+'_resized/'+name+".png", quality=100)
                     
             else:
                     image.save('src/neural_astar/utils/voronoi_utilities/maps_data/maps/DiscardedImages/' + img )

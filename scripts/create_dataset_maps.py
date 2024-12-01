@@ -35,10 +35,10 @@ def process(dir: str, cluster: str, image: str):
         cv2.drawContours(fill_mask, contours, -1, (255), thickness=cv2.FILLED)
 
         # Invertire la maschera di riempimento
-        fill_mask_inv = cv2.bitwise_not(fill_mask)
+        #fill_mask_inv = cv2.bitwise_not(fill_mask)
 
         # Applicare la maschera per cambiare le aree esterne bianche in nero
-        img[fill_mask_inv == 255] = [0, 0, 0]
+        #img[fill_mask_inv == 255] = [0, 0, 0]
 
         transform = transforms.Compose([
                     transforms.ToTensor()
