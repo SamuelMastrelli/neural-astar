@@ -12,7 +12,7 @@ for cluster in os.listdir('src/neural_astar/utils/voronoi_utilities/maps_data/ma
 
 
 
-            if image.size[0] >= 900 and image.size[1] >= 900:
+            if (image.size[0] >= 740 and image.size[1] >= 740) or cluster=="test":
                     res=transforms.Resize(400)(image)
 
                     transform = transforms.Compose([
