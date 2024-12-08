@@ -44,12 +44,13 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
     #in 6 sezioni: initialization(init e setup), train loop(training step),
     #validation loop(validation step), test loop(test step), prediction loop(preditcion step),
     #optimizers and LR schedulers(configure optimizer)
-    def __init__(self, planner, config, maps=False):
+    def __init__(self, planner, config, greedy=False, voronoi =False):
         super().__init__()
         self.planner = planner
         self.vanilla_astar = VanillaAstar(use_differentiable_astar=True)
         self.config = config
-        self.maps = maps
+        self.greedy = greedy
+        self.voronoi = voronoi
       
 
     def forward(self, map_designs, start_maps, goal_maps):
@@ -78,28 +79,38 @@ class PlannerModule(pl.LightningModule): #LightningModule Organizza il codice
         # For shortest path problems:
         if map_designs.shape[1] == 1:
 
-            if(self.maps):
-                gr_output = VanillaAstar(use_greedy=True)(map_designs, start_maps, goal_maps)
-                pathlen_astar = gr_output.paths.sum((1,2,3)).detach().cpu().numpy()
-                exp_astar = gr_output.histories.sum((1,2,3)).detach().cpu().numpy()
+            if not self.voronoi:
 
+
+                if(self.greedy):
+                    gr_output = VanillaAstar(use_greedy=True)(map_designs.cpu(), start_maps.cpu(), goal_maps.cpu())
+                    pathlen_astar = gr_output.paths.sum((1,2,3)).detach().cpu().numpy()
+                    exp_astar = gr_output.histories.sum((1,2,3)).detach().cpu().numpy()
+
+                else:
+                    va_outputs = self.vanilla_astar(map_designs, start_maps, goal_maps)
+                    pathlen_astar = va_outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()  
+                    exp_astar = va_outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
+
+                exp_na = outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
+                pathlen_model = outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
+
+                p_opt = (pathlen_astar == pathlen_model).mean()
+                
+                p_exp = np.maximum((exp_astar - exp_na) / exp_astar, 0.0).mean()
+
+                h_mean = 2.0 / (1.0 / (p_opt + 1e-10) + 1.0 / (p_exp + 1e-10))
+
+                self.log("metrics/p_exp", p_exp, prog_bar=True)
+                self.log("metrics/h_mean", h_mean, prog_bar=True)
             else:
-                va_outputs = self.vanilla_astar(map_designs, start_maps, goal_maps)
-                pathlen_astar = va_outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()  
-                exp_astar = va_outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
-
-            exp_na = outputs.histories.sum((1, 2, 3)).detach().cpu().numpy()
-            pathlen_model = outputs.paths.sum((1, 2, 3)).detach().cpu().numpy()
-
-            p_opt = (pathlen_astar == pathlen_model).mean()
-            
-            p_exp = np.maximum((exp_astar - exp_na) / exp_astar, 0.0).mean()
-
-            h_mean = 2.0 / (1.0 / (p_opt + 1e-10) + 1.0 / (p_exp + 1e-10))
+                pathlen_astar = opt_trajs.sum((1,2,3)).detach().cpu().numpy()
+                pathlen_model = outputs.paths.sum((1,2,3)).detach().cpu().numpy()
+                p_opt = (pathlen_astar == pathlen_model).mean()
+                
 
             self.log("metrics/p_opt", p_opt, prog_bar=True)
-            self.log("metrics/p_exp", p_exp, prog_bar=True)
-            self.log("metrics/h_mean", h_mean, prog_bar=True)
+     
 
         return loss
 

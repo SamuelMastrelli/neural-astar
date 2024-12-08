@@ -44,7 +44,7 @@ def main(config):
         monitor="metrics/val_loss", save_weights_only=False, mode="min"
     )
 
-    module = PlannerModule(neural_astar, config)
+    module = PlannerModule(neural_astar, config, greedy=True)
     logdir = f"{config.logdir}/{os.path.basename(config.dataset)}"
     trainer = pl.Trainer(
         accelerator= "gpu" if torch.cuda.is_available() else "cpu",
