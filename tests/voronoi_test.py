@@ -51,11 +51,11 @@ def test_start_goal_shortest_path():
 
                 # Save voronoi bitmap
     cv2.imwrite(os.path.join(
-        os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
+        os.path.dirname('src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
         "area5_2" + '_floor_' + str(0) + '.png'),
         path_bitmap)
     cv2.imwrite(os.path.join(
-        os.path.dirname('/home/mastrelli/neural-astar/src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
+        os.path.dirname('src/neural_astar/utils/voronoi_utilities/'), 'maps_data', 'voronoi_bitmaps',
         "area5_2rev" + '_floor_' + str(0) + '.png'),
         path_bitmap1)
 
