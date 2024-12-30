@@ -66,6 +66,17 @@ You can also visualize and save planning results as gif.
 
 Once training has been done, open [`notebooks/example_warcraft.ipnyb`](https://github.com/omron-sinicx/neural-astar/tree/minimal/notebooks/example_warcraft.ipynb) to see how it works.
 
+## Perform planning on GibsonUtilities data with Neural A\*
+
+### Preparation
+- Makesure to modify and run the scrpit `resize.py` if you want to change the dimension of the maps from [Utilities for GibsonEnviroment](https://github.com/micheleantonazzi/gibson-env-utilities) e want to rebuild the dataset.
+- Run the scrpit `create_dataset_maps.py` to create the npz file containing the problem's instances.
+
+### Training
+```sh
+(.venv) $ python scripts/train_maps.py
+```
+
 ## FAQs
 
 ### Data format (c.f. https://github.com/omron-sinicx/neural-astar/issues/1#issuecomment-968063948)
