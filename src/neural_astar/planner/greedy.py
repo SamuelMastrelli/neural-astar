@@ -38,8 +38,8 @@ def get_neighbor_indices(idx: int, H: int, W: int) -> np.array:
     return np.array(neighbor_indices)
 
 
-def compute_chebyshev_distance(idx: int, goal_idx: int, W: int) -> float:
-    """Compute chebyshev heuristic"""
+def euclidean(idx: int, goal_idx: int, W: int) -> float:
+    """Compute euclidean heuristic"""
 
     loc = np.array([idx % W, idx // W])
     goal_loc = np.array([goal_idx % W, goal_idx // W])
@@ -140,7 +140,7 @@ def solve_single(
             if map_design_vct[idx_nei] == 1:
                 h_new = (
                     
-                     compute_chebyshev_distance(idx_selected, goal_idx, W)
+                     euclidean(idx_selected, goal_idx, W)
                      
 
                 )
