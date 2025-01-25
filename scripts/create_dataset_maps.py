@@ -17,22 +17,22 @@ def process(dir: str, cluster: str, image: str):
         print(image)
 
         # Converti l'immagine in scala di grigi
-        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        # Creare una maschera binaria delle aree bianche
-        _, binary_mask = cv2.threshold(gray_image, 240, 255, cv2.THRESH_BINARY)
+        # # Creare una maschera binaria delle aree bianche
+        # _, binary_mask = cv2.threshold(gray_image, 240, 255, cv2.THRESH_BINARY)
 
-        # Invertire la maschera
-        binary_mask_inv = cv2.bitwise_not(binary_mask)
+        # # Invertire la maschera
+        # binary_mask_inv = cv2.bitwise_not(binary_mask)
 
-        # Trova i contorni dell'edificio
-        contours, _ = cv2.findContours(binary_mask_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # # Trova i contorni dell'edificio
+        # contours, _ = cv2.findContours(binary_mask_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Creare una maschera di riempimento
-        fill_mask = np.zeros_like(gray_image)
+        # # Creare una maschera di riempimento
+        # fill_mask = np.zeros_like(gray_image)
 
-        # Riempire solo le aree esterne all'edificio
-        cv2.drawContours(fill_mask, contours, -1, (255), thickness=cv2.FILLED)
+        # # Riempire solo le aree esterne all'edificio
+        # cv2.drawContours(fill_mask, contours, -1, (255), thickness=cv2.FILLED)
 
         # Invertire la maschera di riempimento
         #fill_mask_inv = cv2.bitwise_not(fill_mask)
